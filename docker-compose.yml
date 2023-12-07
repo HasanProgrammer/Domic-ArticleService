@@ -1,0 +1,72 @@
+name: 'article_service'
+
+services:
+  
+  domic.article.api:
+    networks:
+      - domic
+    image: article_service:1.0.0
+    deploy:
+      resources:
+        limits:
+          memory: 60M
+        reservations:
+          memory: 60M
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "1020-1040:443"
+    volumes:
+      - log:/app/CoreLogs
+      - ~\.aspnet\https\:/https/
+    environment:
+      - E-RabbitMQ-Host=host.docker.internal
+      - E-RabbitMQ-Port=5672
+      - E-RabbitMQ-Username=guest
+      - E-RabbitMQ-Password=guest
+      - I-RabbitMQ-Host=
+      - I-RabbitMQ-Port=
+      - I-RabbitMQ-Username=
+      - I-RabbitMQ-Password=
+      - RedisConnectionString=domic.article.redis:6379
+      - MongoConnectionString=
+      - C-SqlServerConnectionString=Server=domic.article.sql.server,1433;Database=ArticleService;User ID=sa;Password=Hasan313@@313!!;MultipleActiveResultSets=true;Integrated Security=false;
+      - Q-SqlServerConnectionString=
+      - Host=domic.article.api
+      - Port=443
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=Dotris313@313%%
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/Karami.WebAPI.pfx
+    depends_on:
+      - domic.article.sql.server
+      - domic.article.redis
+  
+  domic.article.sql.server:
+    networks:
+      - domic
+    image: 'mcr.microsoft.com/mssql/server'
+    container_name: 'article_sql_server'
+    ports:
+      - 1500:1433
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Hasan313@@313!!
+  
+  domic.article.redis:
+    networks:
+      - domic
+    image: 'redis'
+    container_name: 'article_redis'
+    command: 'redis-server'
+    ports:
+      - 6400:6379
+
+volumes: 
+  log:
+    
+networks:
+  domic:
+    external: true
