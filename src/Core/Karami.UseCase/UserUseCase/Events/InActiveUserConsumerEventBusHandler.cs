@@ -14,13 +14,13 @@ namespace Karami.UseCase.UserUseCase.Events;
 
 public class InActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<UserInActived>
 {
-    private readonly IDotrisDateTime           _dotrisDateTime;
+    private readonly IDateTime                 _dotrisDateTime;
     private readonly ISerializer               _serializer;
     private readonly IEventCommandRepository   _eventCommandRepository;
     private readonly IArticleCommandRepository _articleCommandRepository;
 
     public InActiveUserConsumerEventBusHandler(IArticleCommandRepository articleCommandRepository,
-        IEventCommandRepository eventCommandRepository, IDotrisDateTime dotrisDateTime, ISerializer serializer
+        IEventCommandRepository eventCommandRepository, IDateTime dotrisDateTime, ISerializer serializer
     )
     {
         _dotrisDateTime           = dotrisDateTime;
@@ -36,7 +36,7 @@ public class InActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<User
 
         foreach (var article in articles)
         {
-            article.InActive(_dotrisDateTime);
+            article.InActive(_dotrisDateTime, @event.UpdatedBy);
             
             _articleCommandRepository.Change(article);
             

@@ -17,18 +17,18 @@ public class InActiveCommandHandler : ICommandHandler<InActiveCommand, string>
 {
     private readonly object _validationResult;
     
-    private readonly IDotrisDateTime           _dotrisDateTime;
+    private readonly IDateTime                 _dateTime;
     private readonly ISerializer               _serializer;
     private readonly IJsonWebToken             _jsonWebToken;
     private readonly IEventCommandRepository   _eventCommandRepository;
     private readonly IArticleCommandRepository _articleCommandRepository;
 
     public InActiveCommandHandler(IArticleCommandRepository articleCommandRepository,
-        IEventCommandRepository eventCommandRepository, IDotrisDateTime dotrisDateTime, ISerializer serializer,
+        IEventCommandRepository eventCommandRepository, IDateTime dateTime, ISerializer serializer,
         IJsonWebToken jsonWebToken
     )
     {
-        _dotrisDateTime           = dotrisDateTime;
+        _dateTime                 = dateTime;
         _serializer               = serializer;
         _jsonWebToken             = jsonWebToken;
         _eventCommandRepository   = eventCommandRepository;
@@ -41,13 +41,13 @@ public class InActiveCommandHandler : ICommandHandler<InActiveCommand, string>
     {
         var article = _validationResult as Article;
         
-        article.InActive(_dotrisDateTime);
+        article.InActive(_dateTime, _jsonWebToken.GetIdentityUserId(command.Token));
 
         _articleCommandRepository.Change(article);
 
         #region OutBox
 
-        var events = article.GetEvents.ToEntityOfEvent(_dotrisDateTime, _serializer, Service.ArticleService,
+        var events = article.GetEvents.ToEntityOfEvent(_dateTime, _serializer, Service.ArticleService,
             Table.ArticleTable, Action.Update, _jsonWebToken.GetUsername(command.Token)
         );
 

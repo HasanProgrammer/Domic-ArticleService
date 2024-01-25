@@ -20,26 +20,26 @@ public class UpdateCommandHandler : ICommandHandler<UpdateCommand, string>
     private readonly object _validationResult;
 
     private readonly IJsonWebToken             _jsonWebToken;
-    private readonly IDotrisDateTime           _dotrisDateTime;
+    private readonly IDateTime                 _dateTime;
     private readonly ISerializer               _serializer;
     private readonly IArticleCommandRepository _articleCommandRepository;
     private readonly IFileCommandRepository    _fileCommandRepository;
     private readonly IEventCommandRepository   _eventCommandRepository;
+    private readonly IGlobalUniqueIdGenerator  _idGenerator;
 
-    public UpdateCommandHandler(IArticleCommandRepository articleCommandRepository,
-        IFileCommandRepository fileCommandRepository, 
-        IEventCommandRepository eventCommandRepository, 
-        IDotrisDateTime dotrisDateTime, 
-        ISerializer serializer, 
-        IJsonWebToken jsonWebToken
+    public UpdateCommandHandler(IArticleCommandRepository articleCommandRepository, 
+        IFileCommandRepository fileCommandRepository, IEventCommandRepository eventCommandRepository, 
+        IDateTime dateTime, ISerializer serializer, IJsonWebToken jsonWebToken, 
+        IGlobalUniqueIdGenerator idGenerator
     )
     {
-        _dotrisDateTime           = dotrisDateTime;
+        _dateTime                 = dateTime;
         _serializer               = serializer;
         _jsonWebToken             = jsonWebToken;
         _fileCommandRepository    = fileCommandRepository;
         _articleCommandRepository = articleCommandRepository;
         _eventCommandRepository   = eventCommandRepository;
+        _idGenerator              = idGenerator;
     }
 
     [WithValidation]
@@ -47,12 +47,15 @@ public class UpdateCommandHandler : ICommandHandler<UpdateCommand, string>
     public async Task<string> HandleAsync(UpdateCommand command, CancellationToken cancellationToken)
     {
         var targetArticle = _validationResult as Article;
-        
-        var newFileId = Guid.NewGuid().ToString();
+
+        var newFileId = _idGenerator.GetRandom();
+
+        var identityUserId = _jsonWebToken.GetIdentityUserId(command.Token);
 
         targetArticle.Change(
-            _dotrisDateTime    ,
+            _dateTime          ,
             command.CategoryId ,
+            identityUserId     ,
             command.Title      ,
             command.Summary    ,
             command.Body       ,
@@ -70,16 +73,19 @@ public class UpdateCommandHandler : ICommandHandler<UpdateCommand, string>
             _fileCommandRepository.Remove(targetFile);
 
             var newFile =
-                new File(_dotrisDateTime, newFileId, targetArticle.Id, command.FilePath, command.FileName, command.FileExtension);
+                new File(_dateTime, newFileId, targetArticle.Id, identityUserId, command.FilePath, 
+                    command.FileName, command.FileExtension
+                );
 
+            //ToDo : ( Tech Debt ) -> Should be used [Add] insted [AddAsync]
             await _fileCommandRepository.AddAsync(newFile, cancellationToken);
         }
 
         _articleCommandRepository.Change(targetArticle);
 
         #region OutBox
-
-        var events = targetArticle.GetEvents.ToEntityOfEvent(_dotrisDateTime, _serializer,
+        
+        var events = targetArticle.GetEvents.ToEntityOfEvent(_dateTime, _serializer,
             Service.ArticleService, Table.ArticleTable, Action.Create, _jsonWebToken.GetUsername(command.Token)
         );
 

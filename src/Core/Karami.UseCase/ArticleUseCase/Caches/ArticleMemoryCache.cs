@@ -23,7 +23,7 @@ public class ArticleMemoryCache : IMemoryCacheSetter<List<ArticlesViewModel>>
 
         return query.Select(article => new ArticlesViewModel {
             Id                    = article.Id                          ,
-            UserId                = article.UserId                      ,
+            CreatedBy             = article.CreatedBy                   ,
             CategoryId            = article.CategoryId                  ,
             Title                 = article.Title.Value                 ,
             Summary               = article.Summary.Value               ,

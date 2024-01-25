@@ -40,5 +40,5 @@ public partial class ArticleCommandRepository
                                    .ToListAsync(cancellationToken);
 
     public List<Article> FindByUserId(string userId)
-        => _sqlContext.Articles.Where(article => article.UserId.Equals(userId)).ToList();
+        => _sqlContext.Articles.Where(article => article.CreatedBy.Equals(userId)).ToList();
 }

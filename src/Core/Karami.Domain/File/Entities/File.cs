@@ -5,6 +5,7 @@ using Karami.Core.Domain.Contracts.Interfaces;
 using Karami.Core.Domain.Enumerations;
 using Karami.Core.Domain.ValueObjects;
 using Karami.Domain.File.ValueObjects;
+
 using Path = Karami.Domain.File.ValueObjects.Path;
 
 namespace Karami.Domain.File.Entities;
@@ -35,25 +36,28 @@ public class File : Entity<string>
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="dotrisDateTime"></param>
+    /// <param name="dateTime"></param>
     /// <param name="id"></param>
     /// <param name="articleId"></param>
+    /// <param name="createdBy"></param>
     /// <param name="path"></param>
     /// <param name="fileName"></param>
     /// <param name="extension"></param>
-    public File(IDotrisDateTime dotrisDateTime, string id, string articleId, string path, string fileName, string extension)
+    public File(IDateTime dateTime, string id, string articleId, string createdBy, string path, string fileName, 
+        string extension
+    )
     {
         var nowDateTime        = DateTime.Now;
-        var nowPersianDateTime = dotrisDateTime.ToPersianShortDate(nowDateTime);
+        var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
 
         Id        = id;
         ArticleId = articleId;
+        CreatedBy = createdBy;
         Path      = new Path(path);
         Name      = new Name(fileName);
         Extension = new Extension(extension);
         IsActive  = IsActive.Active;
         CreatedAt = new CreatedAt(nowDateTime, nowPersianDateTime);
-        UpdatedAt = new UpdatedAt(nowDateTime, nowPersianDateTime);
     }
 
     /*---------------------------------------------------------------*/
@@ -63,12 +67,14 @@ public class File : Entity<string>
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="dotrisDateTime"></param>
-    public void Delete(IDotrisDateTime dotrisDateTime)
+    /// <param name="dateTime"></param>
+    /// <param name="updatedBy"></param>
+    public void Delete(IDateTime dateTime, string updatedBy)
     {
         var nowDateTime = DateTime.Now;
         
         IsDeleted = IsDeleted.Delete;
-        UpdatedAt = new UpdatedAt(nowDateTime, dotrisDateTime.ToPersianShortDate(nowDateTime));
+        UpdatedBy = updatedBy;
+        UpdatedAt = new UpdatedAt(nowDateTime, dateTime.ToPersianShortDate(nowDateTime));
     }
 }

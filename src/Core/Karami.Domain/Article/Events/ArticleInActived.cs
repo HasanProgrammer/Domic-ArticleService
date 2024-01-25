@@ -6,7 +6,7 @@ using Karami.Core.Domain.Enumerations;
 namespace Karami.Domain.Article.Events;
 
 [MessageBroker(ExchangeType = Exchange.FanOut, Exchange = Broker.Article_Article_Exchange)]
-public class ArticleInActived : UpdateDomainEvent
+public class ArticleInActived : UpdateDomainEvent<string>
 {
-    public required string Id { get; init; }
+    
 }

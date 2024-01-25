@@ -11,7 +11,6 @@ namespace Karami.Domain.Article.Entities;
 
 public class Article : Entity<string>
 {
-    public string UserId     { get; private set; }
     public string CategoryId { get; private set; }
     
     /*---------------------------------------------------------------*/
@@ -36,9 +35,9 @@ public class Article : Entity<string>
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="dotrisDateTime"></param>
+    /// <param name="dateTime"></param>
     /// <param name="id"></param>
-    /// <param name="userId"></param>
+    /// <param name="createdBy"></param>
     /// <param name="categoryId"></param>
     /// <param name="title"></param>
     /// <param name="summary"></param>
@@ -47,27 +46,26 @@ public class Article : Entity<string>
     /// <param name="filePath"></param>
     /// <param name="fileName"></param>
     /// <param name="fileExtension"></param>
-    public Article(IDotrisDateTime dotrisDateTime, string id, string userId, string categoryId, string title, string summary, string body,
-        string fileId, string filePath, string fileName, string fileExtension
+    public Article(IDateTime dateTime, string id, string createdBy, string categoryId, string title, string summary, 
+        string body, string fileId, string filePath, string fileName, string fileExtension
     )
     {
         var nowDateTime        = DateTime.Now;
-        var nowPersianDateTime = dotrisDateTime.ToPersianShortDate(nowDateTime);
+        var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
 
         Id         = id;
-        UserId     = userId;
         CategoryId = categoryId;
+        CreatedBy  = createdBy;
         Title      = new Title(title);
         Summary    = new Summary(summary);
         Body       = new Body(body);
         IsActive   = IsActive.Active;
         CreatedAt  = new CreatedAt(nowDateTime, nowPersianDateTime);
-        UpdatedAt  = new UpdatedAt(nowDateTime, nowPersianDateTime);
         
         AddEvent(
             new ArticleCreated {
                 Id                    = Id                 ,
-                UserId                = userId             ,
+                CreatedBy             = createdBy          ,
                 CategoryId            = categoryId         ,
                 Title                 = title              ,
                 Summary               = summary            ,
@@ -77,8 +75,6 @@ public class Article : Entity<string>
                 FileName              = fileName           ,
                 FileExtension         = fileExtension      ,
                 CreatedAt_EnglishDate = nowDateTime        ,
-                UpdatedAt_EnglishDate = nowDateTime        ,
-                UpdatedAt_PersianDate = nowPersianDateTime ,
                 CreatedAt_PersianDate = nowPersianDateTime
             }
         );
@@ -91,8 +87,9 @@ public class Article : Entity<string>
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="dotrisDateTime"></param>
+    /// <param name="dateTime"></param>
     /// <param name="categoryId"></param>
+    /// <param name="updatedBy"></param>
     /// <param name="title"></param>
     /// <param name="summary"></param>
     /// <param name="body"></param>
@@ -100,14 +97,15 @@ public class Article : Entity<string>
     /// <param name="filePath"></param>
     /// <param name="fileName"></param>
     /// <param name="fileExtension"></param>
-    public void Change(IDotrisDateTime dotrisDateTime, string categoryId, string title, string summary, string body,
-        string fileId, string filePath, string fileName, string fileExtension
+    public void Change(IDateTime dateTime, string categoryId, string updatedBy, string title, string summary, 
+        string body, string fileId, string filePath, string fileName, string fileExtension
     )
     {
         var nowDateTime        = DateTime.Now;
-        var nowPersianDateTime = dotrisDateTime.ToPersianShortDate(nowDateTime);
+        var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
 
         CategoryId = categoryId;
+        UpdatedBy  = updatedBy;
         Title      = new Title(title);
         Summary    = new Summary(summary);
         Body       = new Body(body);
@@ -117,6 +115,7 @@ public class Article : Entity<string>
             new ArticleUpdated {
                 Id                    = Id            ,
                 CategoryId            = categoryId    ,
+                UpdatedBy             = updatedBy     ,
                 Title                 = title         ,
                 Summary               = summary       ,
                 Body                  = body          ,
@@ -125,7 +124,7 @@ public class Article : Entity<string>
                 FileExtension         = fileExtension ,
                 FilePath              = filePath      ,
                 UpdatedAt_EnglishDate = nowDateTime   ,
-                UpdatedAt_PersianDate = nowPersianDateTime 
+                UpdatedAt_PersianDate = nowPersianDateTime
             }
         );
     }
@@ -133,21 +132,25 @@ public class Article : Entity<string>
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="dotrisDateTime"></param>
+    /// <param name="dateTime"></param>
+    /// <param name="updatedBy"></param>
     /// <param name="raiseEvent"></param>
-    public void Active(IDotrisDateTime dotrisDateTime, bool raiseEvent = true)
+    public void Active(IDateTime dateTime, string updatedBy, bool raiseEvent = true)
     {
         var nowDateTime = DateTime.Now;
+        var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
         
         IsActive  = IsActive.Active;
-        UpdatedAt = new UpdatedAt(nowDateTime, dotrisDateTime.ToPersianShortDate(nowDateTime));
+        UpdatedBy = updatedBy;
+        UpdatedAt = new UpdatedAt(nowDateTime, nowPersianDateTime);
         
         if(raiseEvent)
             AddEvent(
                 new ArticleActived {
                     Id                    = Id          ,
+                    UpdatedBy             = updatedBy   , 
                     UpdatedAt_EnglishDate = nowDateTime ,
-                    UpdatedAt_PersianDate = dotrisDateTime.ToPersianShortDate(nowDateTime)
+                    UpdatedAt_PersianDate = nowPersianDateTime
                 }
             );
     }
@@ -155,21 +158,25 @@ public class Article : Entity<string>
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="dotrisDateTime"></param>
+    /// <param name="dateTime"></param>
+    /// <param name="updatedBy"></param>
     /// <param name="raiseEvent"></param>
-    public void InActive(IDotrisDateTime dotrisDateTime, bool raiseEvent = true)
+    public void InActive(IDateTime dateTime, string updatedBy, bool raiseEvent = true)
     {
         var nowDateTime = DateTime.Now;
+        var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
         
         IsActive  = IsActive.InActive;
-        UpdatedAt = new UpdatedAt(nowDateTime, dotrisDateTime.ToPersianShortDate(nowDateTime));
+        UpdatedBy = updatedBy;
+        UpdatedAt = new UpdatedAt(nowDateTime, nowPersianDateTime);
         
         if(raiseEvent)
             AddEvent(
                 new ArticleInActived {
                     Id                    = Id          ,
+                    UpdatedBy             = updatedBy   , 
                     UpdatedAt_EnglishDate = nowDateTime ,
-                    UpdatedAt_PersianDate = dotrisDateTime.ToPersianShortDate(nowDateTime)
+                    UpdatedAt_PersianDate = nowPersianDateTime
                 }
             );
     }
@@ -177,21 +184,25 @@ public class Article : Entity<string>
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="dotrisDateTime"></param>
+    /// <param name="dateTime"></param>
+    /// <param name="updatedBy"></param>
     /// <param name="raiseEvent"></param>
-    public void Delete(IDotrisDateTime dotrisDateTime, bool raiseEvent = true)
+    public void Delete(IDateTime dateTime, string updatedBy, bool raiseEvent = true)
     {
         var nowDateTime = DateTime.Now;
+        var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
         
         IsDeleted = IsDeleted.Delete;
-        UpdatedAt = new UpdatedAt(nowDateTime, dotrisDateTime.ToPersianShortDate(nowDateTime));
+        UpdatedBy = updatedBy;
+        UpdatedAt = new UpdatedAt(nowDateTime, nowPersianDateTime);
         
         if(raiseEvent)
             AddEvent(
                 new ArticleDeleted {
                     Id                    = Id          ,
+                    UpdatedBy             = updatedBy   , 
                     UpdatedAt_EnglishDate = nowDateTime ,
-                    UpdatedAt_PersianDate = dotrisDateTime.ToPersianShortDate(nowDateTime)
+                    UpdatedAt_PersianDate = nowPersianDateTime
                 }
             );
     }

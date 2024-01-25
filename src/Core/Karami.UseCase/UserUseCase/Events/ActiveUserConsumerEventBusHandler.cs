@@ -14,16 +14,16 @@ namespace Karami.UseCase.UserUseCase.Events;
 
 public class ActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<UserActived>
 {
-    private readonly IDotrisDateTime           _dotrisDateTime;
+    private readonly IDateTime                 _dateTime;
     private readonly ISerializer               _serializer;
     private readonly IEventCommandRepository   _eventCommandRepository;
     private readonly IArticleCommandRepository _articleCommandRepository;
 
     public ActiveUserConsumerEventBusHandler(IArticleCommandRepository articleCommandRepository,
-        IEventCommandRepository eventCommandRepository, IDotrisDateTime dotrisDateTime, ISerializer serializer
+        IEventCommandRepository eventCommandRepository, IDateTime dateTime, ISerializer serializer
     )
     {
-        _dotrisDateTime           = dotrisDateTime;
+        _dateTime                 = dateTime;
         _serializer               = serializer;
         _eventCommandRepository   = eventCommandRepository;
         _articleCommandRepository = articleCommandRepository;
@@ -36,13 +36,13 @@ public class ActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<UserAc
 
         foreach (var article in articles)
         {
-            article.Active(_dotrisDateTime);
+            article.Active(_dateTime, @event.UpdatedBy);
             
             _articleCommandRepository.Change(article);
             
             #region OutBox
 
-            var newEvents = article.GetEvents.ToEntityOfEvent(_dotrisDateTime, _serializer, Service.ArticleService,
+            var newEvents = article.GetEvents.ToEntityOfEvent(_dateTime, _serializer, Service.ArticleService,
                 Table.ArticleTable, Action.Update, @event.OwnerUsername
             );
 

@@ -15,53 +15,57 @@ namespace Karami.UseCase.ArticleUseCase.Commands.Create;
 
 public class CreateCommandHandler : ICommandHandler<CreateCommand, string>
 {
-    private readonly IDotrisDateTime           _dotrisDateTime;
+    private readonly IDateTime                 _dateTime;
     private readonly ISerializer               _serializer;
     private readonly IJsonWebToken             _jsonWebToken;
     private readonly IFileCommandRepository    _fileCommandRepository;
     private readonly IArticleCommandRepository _articleCommandRepository;
     private readonly IEventCommandRepository   _eventCommandRepository;
+    private readonly IGlobalUniqueIdGenerator  _idGenerator;
 
     public CreateCommandHandler(IFileCommandRepository fileCommandRepository, 
-        IArticleCommandRepository articleCommandRepository, 
-        IEventCommandRepository eventCommandRepository, 
-        IDotrisDateTime dotrisDateTime,
-        ISerializer serializer,
-        IJsonWebToken jsonWebToken
+        IArticleCommandRepository articleCommandRepository, IEventCommandRepository eventCommandRepository, 
+        IDateTime dateTime, ISerializer serializer, IJsonWebToken jsonWebToken, 
+        IGlobalUniqueIdGenerator idGenerator
     )
     {
-        _dotrisDateTime           = dotrisDateTime;
+        _dateTime                 = dateTime;
         _serializer               = serializer;
         _jsonWebToken             = jsonWebToken;
         _fileCommandRepository    = fileCommandRepository;
         _articleCommandRepository = articleCommandRepository;
         _eventCommandRepository   = eventCommandRepository;
+        _idGenerator              = idGenerator;
     }
 
     [WithValidation]
     [WithTransaction]
     public async Task<string> HandleAsync(CreateCommand command, CancellationToken cancellationToken)
     {
-        var fileId = Guid.NewGuid().ToString();
-        
+        var fileId    = _idGenerator.GetRandom();
+        var articleId = _idGenerator.GetRandom();
+
+        var identityUserId = _jsonWebToken.GetIdentityUserId(command.Token);
+
         var newArticle = new Article(
-            _dotrisDateTime           ,
-            Guid.NewGuid().ToString() ,
-            command.UserId            ,
-            command.CategoryId        ,
-            command.Title             ,
-            command.Summary           ,
-            command.Body              ,
-            fileId                    ,
-            command.FilePath          ,
-            command.FileName          ,
+            _dateTime           ,
+            articleId           ,
+            command.UserId      ,
+            command.CategoryId  ,
+            command.Title       ,
+            command.Summary     ,
+            command.Body        ,
+            fileId              ,
+            command.FilePath    ,
+            command.FileName    ,
             command.FileExtension
         );
 
         var newFile = new File(
-            _dotrisDateTime  ,
+            _dateTime        ,
             fileId           ,
             newArticle.Id    ,
+            identityUserId   ,
             command.FilePath ,
             command.FileName ,
             command.FileName
@@ -72,7 +76,7 @@ public class CreateCommandHandler : ICommandHandler<CreateCommand, string>
 
         #region OutBox
 
-        var events = newArticle.GetEvents.ToEntityOfEvent(_dotrisDateTime, _serializer, Service.ArticleService, 
+        var events = newArticle.GetEvents.ToEntityOfEvent(_dateTime, _serializer, Service.ArticleService, 
             Table.ArticleTable, Action.Create, _jsonWebToken.GetUsername(command.Token)
         );
 

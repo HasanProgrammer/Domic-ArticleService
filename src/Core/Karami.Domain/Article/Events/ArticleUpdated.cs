@@ -6,11 +6,10 @@ using Karami.Core.Domain.Enumerations;
 namespace Karami.Domain.Article.Events;
 
 [MessageBroker(ExchangeType = Exchange.FanOut, Exchange = Broker.Article_Article_Exchange)]
-public class ArticleUpdated : UpdateDomainEvent
+public class ArticleUpdated : UpdateDomainEvent<string>
 {
     //Article info ( Aggregte entity | Aggregte root )
     
-    public required string Id         { get; init; }
     public required string CategoryId { get; init; }
     public required string Title      { get; init; }
     public required string Summary    { get; init; }

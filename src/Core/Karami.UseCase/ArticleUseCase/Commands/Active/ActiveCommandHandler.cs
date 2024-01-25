@@ -17,18 +17,18 @@ public class ActiveCommandHandler : ICommandHandler<ActiveCommand, string>
 {
     private readonly object _validationResult;
     
-    private readonly IDotrisDateTime           _dotrisDateTime;
+    private readonly IDateTime                 _dateTime;
     private readonly ISerializer               _serializer;
     private readonly IJsonWebToken             _jsonWebToken;
     private readonly IEventCommandRepository   _eventCommandRepository;
     private readonly IArticleCommandRepository _articleCommandRepository;
 
     public ActiveCommandHandler(IArticleCommandRepository articleCommandRepository,
-        IEventCommandRepository eventCommandRepository, IDotrisDateTime dotrisDateTime, ISerializer serializer,
+        IEventCommandRepository eventCommandRepository, IDateTime dateTime, ISerializer serializer, 
         IJsonWebToken jsonWebToken
     )
     {
-        _dotrisDateTime           = dotrisDateTime;
+        _dateTime                 = dateTime;
         _serializer               = serializer;
         _jsonWebToken             = jsonWebToken;
         _eventCommandRepository   = eventCommandRepository;
@@ -41,16 +41,18 @@ public class ActiveCommandHandler : ICommandHandler<ActiveCommand, string>
     {
         var article = _validationResult as Article;
         
-        article.Active(_dotrisDateTime);
+        article.Active(_dateTime, _jsonWebToken.GetIdentityUserId(command.Token));
 
         _articleCommandRepository.Change(article);
 
         #region OutBox
 
-        var events = article.GetEvents.ToEntityOfEvent(_dotrisDateTime, _serializer, Service.ArticleService,
+        //ToDo : ( Tech Debt ) -> Should be used another way for handling [OutBox] pattern like using [Interceptor]
+        var events = article.GetEvents.ToEntityOfEvent(_dateTime, _serializer, Service.ArticleService,
             Table.ArticleTable, Action.Update, _jsonWebToken.GetUsername(command.Token)
         );
 
+        //ToDo : ( Tech Debt ) -> Should be used [Add] insted [AddAsync]
         foreach (var @event in events)
             await _eventCommandRepository.AddAsync(@event, cancellationToken);
 

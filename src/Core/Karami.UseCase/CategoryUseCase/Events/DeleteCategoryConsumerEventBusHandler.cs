@@ -14,7 +14,7 @@ namespace Karami.UseCase.CategoryUseCase.Events;
 
 public class DeleteCategoryConsumerEventBusHandler : IConsumerEventBusHandler<CategoryDeleted>
 {
-    private readonly IDotrisDateTime           _dotrisDateTime;
+    private readonly IDateTime                 _dateTime;
     private readonly ISerializer               _serializer;
     private readonly IFileCommandRepository    _fileCommandRepository;
     private readonly IArticleCommandRepository _articleCommandRepository;
@@ -22,10 +22,10 @@ public class DeleteCategoryConsumerEventBusHandler : IConsumerEventBusHandler<Ca
 
     public DeleteCategoryConsumerEventBusHandler(IArticleCommandRepository articleCommandRepository,
         IFileCommandRepository fileCommandRepository, IEventCommandRepository eventCommandRepository,
-        IDotrisDateTime dotrisDateTime, ISerializer serializer
+        IDateTime dateTime, ISerializer serializer
     )
     {
-        _dotrisDateTime           = dotrisDateTime;
+        _dateTime                 = dateTime;
         _serializer               = serializer;
         _fileCommandRepository    = fileCommandRepository;
         _articleCommandRepository = articleCommandRepository;
@@ -41,13 +41,13 @@ public class DeleteCategoryConsumerEventBusHandler : IConsumerEventBusHandler<Ca
 
         foreach (var article in targetArticles)
         {
-            article.Delete(_dotrisDateTime);
+            article.Delete(_dateTime, @event.UpdatedBy);
            
             _articleCommandRepository.Change(article);
 
             #region OutBox
 
-            var newEvents = article.GetEvents.ToEntityOfEvent(_dotrisDateTime, _serializer, Service.ArticleService,
+            var newEvents = article.GetEvents.ToEntityOfEvent(_dateTime, _serializer, Service.ArticleService,
                 Table.ArticleTable, Action.Delete, @event.OwnerUsername
             );
 
