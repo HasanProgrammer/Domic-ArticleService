@@ -41,7 +41,7 @@ public class DeleteCategoryConsumerEventBusHandler : IConsumerEventBusHandler<Ca
 
         foreach (var article in targetArticles)
         {
-            article.Delete(_dateTime, @event.UpdatedBy);
+            article.Delete(_dateTime, @event.UpdatedBy, @event.UpdatedRole);
            
             _articleCommandRepository.Change(article);
 

@@ -40,8 +40,11 @@ public class DeleteCommandHandler : ICommandHandler<DeleteCommand, string>
     public async Task<string> HandleAsync(DeleteCommand command, CancellationToken cancellationToken)
     {
         var article = _validationResult as Article;
+
+        var updatedBy = _jsonWebToken.GetIdentityUserId(command.Token);
+        var updatedRole = _serializer.Serialize( _jsonWebToken.GetRoles(command.Token) );
         
-        article.Delete(_dateTime, _jsonWebToken.GetIdentityUserId(command.Token));
+        article.Delete(_dateTime, updatedBy, updatedRole);
 
         _articleCommandRepository.Change(article);
 

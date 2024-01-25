@@ -36,7 +36,7 @@ public class InActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<User
 
         foreach (var article in articles)
         {
-            article.InActive(_dotrisDateTime, @event.UpdatedBy);
+            article.InActive(_dotrisDateTime, @event.UpdatedBy, @event.UpdatedRole);
             
             _articleCommandRepository.Change(article);
             

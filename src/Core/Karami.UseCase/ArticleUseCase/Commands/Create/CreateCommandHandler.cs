@@ -45,12 +45,14 @@ public class CreateCommandHandler : ICommandHandler<CreateCommand, string>
         var fileId    = _idGenerator.GetRandom();
         var articleId = _idGenerator.GetRandom();
 
-        var identityUserId = _jsonWebToken.GetIdentityUserId(command.Token);
+        var createdBy = _jsonWebToken.GetIdentityUserId(command.Token);
+        var createdRole = _serializer.Serialize( _jsonWebToken.GetRoles(command.Token) );
 
         var newArticle = new Article(
             _dateTime           ,
             articleId           ,
-            command.UserId      ,
+            createdBy           ,
+            createdRole         ,
             command.CategoryId  ,
             command.Title       ,
             command.Summary     ,
@@ -65,7 +67,8 @@ public class CreateCommandHandler : ICommandHandler<CreateCommand, string>
             _dateTime        ,
             fileId           ,
             newArticle.Id    ,
-            identityUserId   ,
+            createdBy        ,
+            createdRole      ,
             command.FilePath ,
             command.FileName ,
             command.FileName

@@ -36,7 +36,7 @@ public class ActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<UserAc
 
         foreach (var article in articles)
         {
-            article.Active(_dateTime, @event.UpdatedBy);
+            article.Active(_dateTime, @event.UpdatedBy, @event.UpdatedRole);
             
             _articleCommandRepository.Change(article);
             

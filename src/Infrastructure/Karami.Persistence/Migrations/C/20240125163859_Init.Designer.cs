@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Karami.Persistence.Migrations.C
 {
     [DbContext(typeof(SQLContext))]
-    [Migration("20240125120604_Init")]
+    [Migration("20240125163859_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

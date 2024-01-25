@@ -50,12 +50,14 @@ public class UpdateCommandHandler : ICommandHandler<UpdateCommand, string>
 
         var newFileId = _idGenerator.GetRandom();
 
-        var identityUserId = _jsonWebToken.GetIdentityUserId(command.Token);
+        var updatedBy = _jsonWebToken.GetIdentityUserId(command.Token);
+        var updatedRole = _serializer.Serialize( _jsonWebToken.GetRoles(command.Token) );
 
         targetArticle.Change(
             _dateTime          ,
             command.CategoryId ,
-            identityUserId     ,
+            updatedBy          ,
+            updatedRole        ,
             command.Title      ,
             command.Summary    ,
             command.Body       ,
@@ -73,7 +75,7 @@ public class UpdateCommandHandler : ICommandHandler<UpdateCommand, string>
             _fileCommandRepository.Remove(targetFile);
 
             var newFile =
-                new File(_dateTime, newFileId, targetArticle.Id, identityUserId, command.FilePath, 
+                new File(_dateTime, newFileId, targetArticle.Id, updatedBy, updatedRole, command.FilePath, 
                     command.FileName, command.FileExtension
                 );
 

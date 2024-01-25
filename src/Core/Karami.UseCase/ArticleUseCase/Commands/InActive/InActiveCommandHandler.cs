@@ -41,7 +41,10 @@ public class InActiveCommandHandler : ICommandHandler<InActiveCommand, string>
     {
         var article = _validationResult as Article;
         
-        article.InActive(_dateTime, _jsonWebToken.GetIdentityUserId(command.Token));
+        var updatedBy = _jsonWebToken.GetIdentityUserId(command.Token);
+        var updatedRole = _serializer.Serialize( _jsonWebToken.GetRoles(command.Token) );
+        
+        article.InActive(_dateTime, updatedBy, updatedRole);
 
         _articleCommandRepository.Change(article);
 

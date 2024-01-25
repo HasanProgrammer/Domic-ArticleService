@@ -40,24 +40,26 @@ public class File : Entity<string>
     /// <param name="id"></param>
     /// <param name="articleId"></param>
     /// <param name="createdBy"></param>
+    /// <param name="createdRole"></param>
     /// <param name="path"></param>
     /// <param name="fileName"></param>
     /// <param name="extension"></param>
-    public File(IDateTime dateTime, string id, string articleId, string createdBy, string path, string fileName, 
-        string extension
+    public File(IDateTime dateTime, string id, string articleId, string createdBy, string createdRole,
+        string path, string fileName, string extension
     )
     {
         var nowDateTime        = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
 
-        Id        = id;
-        ArticleId = articleId;
-        CreatedBy = createdBy;
-        Path      = new Path(path);
-        Name      = new Name(fileName);
-        Extension = new Extension(extension);
-        IsActive  = IsActive.Active;
-        CreatedAt = new CreatedAt(nowDateTime, nowPersianDateTime);
+        Id          = id;
+        ArticleId   = articleId;
+        CreatedBy   = createdBy;
+        CreatedRole = createdRole;
+        Path        = new Path(path);
+        Name        = new Name(fileName);
+        Extension   = new Extension(extension);
+        IsActive    = IsActive.Active;
+        CreatedAt   = new CreatedAt(nowDateTime, nowPersianDateTime);
     }
 
     /*---------------------------------------------------------------*/
@@ -69,12 +71,14 @@ public class File : Entity<string>
     /// </summary>
     /// <param name="dateTime"></param>
     /// <param name="updatedBy"></param>
-    public void Delete(IDateTime dateTime, string updatedBy)
+    /// <param name="updatedRole"></param>
+    public void Delete(IDateTime dateTime, string updatedBy, string updatedRole)
     {
         var nowDateTime = DateTime.Now;
         
-        IsDeleted = IsDeleted.Delete;
-        UpdatedBy = updatedBy;
-        UpdatedAt = new UpdatedAt(nowDateTime, dateTime.ToPersianShortDate(nowDateTime));
+        IsDeleted   = IsDeleted.Delete;
+        UpdatedBy   = updatedBy;
+        UpdatedRole = updatedRole;
+        UpdatedAt   = new UpdatedAt(nowDateTime, dateTime.ToPersianShortDate(nowDateTime));
     }
 }

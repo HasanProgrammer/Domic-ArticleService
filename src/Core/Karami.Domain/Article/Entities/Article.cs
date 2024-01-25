@@ -38,6 +38,7 @@ public class Article : Entity<string>
     /// <param name="dateTime"></param>
     /// <param name="id"></param>
     /// <param name="createdBy"></param>
+    /// <param name="createdRole"></param>
     /// <param name="categoryId"></param>
     /// <param name="title"></param>
     /// <param name="summary"></param>
@@ -46,26 +47,28 @@ public class Article : Entity<string>
     /// <param name="filePath"></param>
     /// <param name="fileName"></param>
     /// <param name="fileExtension"></param>
-    public Article(IDateTime dateTime, string id, string createdBy, string categoryId, string title, string summary, 
-        string body, string fileId, string filePath, string fileName, string fileExtension
+    public Article(IDateTime dateTime, string id, string createdBy, string createdRole, string categoryId, 
+        string title, string summary, string body, string fileId, string filePath, string fileName, string fileExtension
     )
     {
         var nowDateTime        = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
 
-        Id         = id;
-        CategoryId = categoryId;
-        CreatedBy  = createdBy;
-        Title      = new Title(title);
-        Summary    = new Summary(summary);
-        Body       = new Body(body);
-        IsActive   = IsActive.Active;
-        CreatedAt  = new CreatedAt(nowDateTime, nowPersianDateTime);
+        Id          = id;
+        CategoryId  = categoryId;
+        CreatedBy   = createdBy;
+        CreatedRole = createdRole;
+        Title       = new Title(title);
+        Summary     = new Summary(summary);
+        Body        = new Body(body);
+        IsActive    = IsActive.Active;
+        CreatedAt   = new CreatedAt(nowDateTime, nowPersianDateTime);
         
         AddEvent(
             new ArticleCreated {
                 Id                    = Id                 ,
                 CreatedBy             = createdBy          ,
+                CreatedRole           = createdRole        ,
                 CategoryId            = categoryId         ,
                 Title                 = title              ,
                 Summary               = summary            ,
@@ -90,6 +93,7 @@ public class Article : Entity<string>
     /// <param name="dateTime"></param>
     /// <param name="categoryId"></param>
     /// <param name="updatedBy"></param>
+    /// <param name="updatedRole"></param>
     /// <param name="title"></param>
     /// <param name="summary"></param>
     /// <param name="body"></param>
@@ -97,25 +101,27 @@ public class Article : Entity<string>
     /// <param name="filePath"></param>
     /// <param name="fileName"></param>
     /// <param name="fileExtension"></param>
-    public void Change(IDateTime dateTime, string categoryId, string updatedBy, string title, string summary, 
-        string body, string fileId, string filePath, string fileName, string fileExtension
+    public void Change(IDateTime dateTime, string categoryId, string updatedBy, string updatedRole, string title, 
+        string summary, string body, string fileId, string filePath, string fileName, string fileExtension
     )
     {
         var nowDateTime        = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
 
-        CategoryId = categoryId;
-        UpdatedBy  = updatedBy;
-        Title      = new Title(title);
-        Summary    = new Summary(summary);
-        Body       = new Body(body);
-        UpdatedAt  = new UpdatedAt(nowDateTime, nowPersianDateTime);
+        CategoryId  = categoryId;
+        UpdatedBy   = updatedBy;
+        UpdatedRole = updatedRole;
+        Title       = new Title(title);
+        Summary     = new Summary(summary);
+        Body        = new Body(body);
+        UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
         
         AddEvent(
             new ArticleUpdated {
                 Id                    = Id            ,
                 CategoryId            = categoryId    ,
                 UpdatedBy             = updatedBy     ,
+                UpdatedRole           = updatedRole   ,
                 Title                 = title         ,
                 Summary               = summary       ,
                 Body                  = body          ,
@@ -134,21 +140,24 @@ public class Article : Entity<string>
     /// </summary>
     /// <param name="dateTime"></param>
     /// <param name="updatedBy"></param>
+    /// <param name="updatedRole"></param>
     /// <param name="raiseEvent"></param>
-    public void Active(IDateTime dateTime, string updatedBy, bool raiseEvent = true)
+    public void Active(IDateTime dateTime, string updatedBy, string updatedRole, bool raiseEvent = true)
     {
         var nowDateTime = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
         
-        IsActive  = IsActive.Active;
-        UpdatedBy = updatedBy;
-        UpdatedAt = new UpdatedAt(nowDateTime, nowPersianDateTime);
+        IsActive    = IsActive.Active;
+        UpdatedBy   = updatedBy;
+        UpdatedRole = updatedRole;
+        UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
         
         if(raiseEvent)
             AddEvent(
                 new ArticleActived {
                     Id                    = Id          ,
-                    UpdatedBy             = updatedBy   , 
+                    UpdatedBy             = updatedBy   ,
+                    UpdatedRole           = updatedRole ,
                     UpdatedAt_EnglishDate = nowDateTime ,
                     UpdatedAt_PersianDate = nowPersianDateTime
                 }
@@ -160,21 +169,24 @@ public class Article : Entity<string>
     /// </summary>
     /// <param name="dateTime"></param>
     /// <param name="updatedBy"></param>
+    /// <param name="updatedRole"></param>
     /// <param name="raiseEvent"></param>
-    public void InActive(IDateTime dateTime, string updatedBy, bool raiseEvent = true)
+    public void InActive(IDateTime dateTime, string updatedBy, string updatedRole, bool raiseEvent = true)
     {
         var nowDateTime = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
         
-        IsActive  = IsActive.InActive;
-        UpdatedBy = updatedBy;
-        UpdatedAt = new UpdatedAt(nowDateTime, nowPersianDateTime);
+        IsActive    = IsActive.InActive;
+        UpdatedBy   = updatedBy;
+        UpdatedRole = updatedRole;
+        UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
         
         if(raiseEvent)
             AddEvent(
                 new ArticleInActived {
                     Id                    = Id          ,
-                    UpdatedBy             = updatedBy   , 
+                    UpdatedBy             = updatedBy   ,
+                    UpdatedRole           = updatedRole ,
                     UpdatedAt_EnglishDate = nowDateTime ,
                     UpdatedAt_PersianDate = nowPersianDateTime
                 }
@@ -186,21 +198,23 @@ public class Article : Entity<string>
     /// </summary>
     /// <param name="dateTime"></param>
     /// <param name="updatedBy"></param>
-    /// <param name="raiseEvent"></param>
-    public void Delete(IDateTime dateTime, string updatedBy, bool raiseEvent = true)
+    /// <param name="updatedRole"></param>
+    public void Delete(IDateTime dateTime, string updatedBy, string updatedRole, bool raiseEvent = true)
     {
         var nowDateTime = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
         
-        IsDeleted = IsDeleted.Delete;
-        UpdatedBy = updatedBy;
-        UpdatedAt = new UpdatedAt(nowDateTime, nowPersianDateTime);
+        IsDeleted   = IsDeleted.Delete;
+        UpdatedBy   = updatedBy;
+        UpdatedRole = updatedRole;
+        UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
         
         if(raiseEvent)
             AddEvent(
                 new ArticleDeleted {
                     Id                    = Id          ,
-                    UpdatedBy             = updatedBy   , 
+                    UpdatedBy             = updatedBy   ,
+                    UpdatedRole           = updatedRole ,
                     UpdatedAt_EnglishDate = nowDateTime ,
                     UpdatedAt_PersianDate = nowPersianDateTime
                 }
