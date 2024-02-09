@@ -20,9 +20,10 @@ builder.WebHost.ConfigureAppConfiguration((context, builder) => builder.AddJsonF
 #region Service Container
 
 builder.RegisterHelpers();
-builder.RegisterCommandSqlServer<C_SQLContext>();
+builder.RegisterELK();
+builder.RegisterEntityFrameworkCoreCommand<C_SQLContext, string>();
 builder.RegisterCommandRepositories();
-builder.RegisterCaching();
+builder.RegisterRedisCaching();
 builder.RegisterMessageBroker();
 builder.RegisterJobs();
 builder.RegisterCommandQueryUseCases();
