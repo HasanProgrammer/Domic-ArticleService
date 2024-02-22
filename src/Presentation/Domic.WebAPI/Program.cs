@@ -2,8 +2,7 @@ using Domic.Core.Infrastructure.Extensions;
 using Domic.Core.WebAPI.Extensions;
 using Domic.WebAPI.EntryPoints.GRPCs;
 using Domic.WebAPI.Frameworks.Extensions;
-
-using C_SQLContext = Domic.Persistence.Contexts.C.SQLContext;
+using Domic.Persistence.Contexts.C;
 
 /*-------------------------------------------------------------------*/
 
@@ -21,13 +20,12 @@ builder.WebHost.ConfigureAppConfiguration((context, builder) => builder.AddJsonF
 
 builder.RegisterHelpers();
 builder.RegisterELK();
-builder.RegisterEntityFrameworkCoreCommand<C_SQLContext, string>();
+builder.RegisterEntityFrameworkCoreCommand<SQLContext, string>();
 builder.RegisterCommandRepositories();
 builder.RegisterRedisCaching();
-builder.RegisterMessageBroker();
-builder.RegisterJobs();
 builder.RegisterCommandQueryUseCases();
 builder.RegisterGrpcServer();
+builder.RegisterMessageBroker();
 builder.RegisterEventsPublisher();
 builder.RegisterEventsSubscriber();
 builder.RegisterServices();
@@ -45,7 +43,7 @@ WebApplication application = builder.Build();
 
 //Primary processing
 
-application.Services.AutoMigration<C_SQLContext>();
+application.Services.AutoMigration<SQLContext>();
 
 /*-------------------------------------------------------------------*/
 
