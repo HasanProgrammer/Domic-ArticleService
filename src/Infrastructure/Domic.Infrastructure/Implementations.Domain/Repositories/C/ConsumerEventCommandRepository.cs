@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Domic.Infrastructure.Implementations.Domain.Repositories.C;
 
-public class CommandConsumerEventRepository(SQLContext context) : IConsumerEventCommandRepository
+public class ConsumerEventCommandRepository(SQLContext context) : IConsumerEventCommandRepository
 {
     public ConsumerEvent FindById(object id) 
         => context.ConsumerEvents.FirstOrDefault(@event => @event.Id == id as string);
