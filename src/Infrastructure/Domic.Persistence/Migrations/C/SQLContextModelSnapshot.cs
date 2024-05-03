@@ -22,6 +22,26 @@ namespace Domic.Persistence.Migrations.C
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("Domic.Core.Domain.Entities.ConsumerEvent", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt_EnglishDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedAt_PersianDate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConsumerEvents", (string)null);
+                });
+
             modelBuilder.Entity("Domic.Core.Domain.Entities.Event", b =>
                 {
                     b.Property<string>("Id")
@@ -35,12 +55,6 @@ namespace Domic.Persistence.Migrations.C
 
                     b.Property<string>("CreatedAt_PersianDate")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedRole")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("IsActive")
@@ -61,17 +75,10 @@ namespace Domic.Persistence.Migrations.C
                     b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UpdatedAt_EnglishDate")
+                    b.Property<DateTime?>("UpdatedAt_EnglishDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedAt_PersianDate")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdatedRole")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("User")

@@ -3,6 +3,7 @@ using Domic.Core.Domain.Entities;
 using Domic.Core.Persistence.Configs;
 using Domic.Domain.Article.Entities;
 using Microsoft.EntityFrameworkCore;
+
 using File = Domic.Domain.File.Entities.File;
 
 namespace Domic.Persistence.Contexts.C;
@@ -19,9 +20,10 @@ public partial class SQLContext : DbContext
 /*Entity*/
 public partial class SQLContext
 {
-    public DbSet<Event> Events     { get; set; }
+    public DbSet<Event> Events { get; set; }
     public DbSet<Article> Articles { get; set; }
-    public DbSet<File> Files       { get; set; }
+    public DbSet<File> Files { get; set; }
+    public DbSet<ConsumerEvent> ConsumerEvents { get; set; }
 }
 
 /*Config*/
@@ -34,5 +36,6 @@ public partial class SQLContext
         builder.ApplyConfiguration(new EventConfig());
         builder.ApplyConfiguration(new ArticleConfig());
         builder.ApplyConfiguration(new FileConfig());
+        builder.ApplyConfiguration(new ConsumerEventConfig());
     }
 }

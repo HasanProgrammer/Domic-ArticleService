@@ -23,6 +23,7 @@ services:
       - ~\.aspnet\https\:/https/
     environment:
       - Elastic-Host=http://localhost:9200
+      - Elastic-Index=
       - Elastic-Username=
       - Elastic-Password=
       - E-RabbitMQ-Host=host.docker.internal

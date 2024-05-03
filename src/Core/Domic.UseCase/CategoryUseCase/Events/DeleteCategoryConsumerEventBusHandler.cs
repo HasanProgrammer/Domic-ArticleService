@@ -23,8 +23,8 @@ public class DeleteCategoryConsumerEventBusHandler : IConsumerEventBusHandler<Ca
         _articleCommandRepository = articleCommandRepository;
     }
     
-    [WithTransaction]
     [WithCleanCache(Keies = Cache.Articles)]
+    [TransactionConfig(Type = TransactionType.Command)]
     public void Handle(CategoryDeleted @event)
     {
         var targetArticles =

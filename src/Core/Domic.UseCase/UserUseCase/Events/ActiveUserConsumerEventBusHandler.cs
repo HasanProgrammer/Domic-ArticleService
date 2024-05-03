@@ -1,4 +1,4 @@
-﻿using System.Data;
+﻿using Domic.Core.Common.ClassConsts;
 using Domic.Core.Domain.Contracts.Interfaces;
 using Domic.Core.UseCase.Attributes;
 using Domic.Core.UseCase.Contracts.Interfaces;
@@ -18,7 +18,7 @@ public class ActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<UserAc
         _articleCommandRepository = articleCommandRepository;
     }
 
-    [WithTransaction(IsolationLevel = IsolationLevel.ReadUncommitted)]
+    [TransactionConfig(Type = TransactionType.Command)]
     public void Handle(UserActived @event)
     {
         var articles = _articleCommandRepository.FindByUserId(@event.Id);

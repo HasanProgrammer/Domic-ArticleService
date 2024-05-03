@@ -21,6 +21,7 @@ builder.WebHost.ConfigureAppConfiguration((context, builder) => builder.AddJsonF
 builder.RegisterHelpers();
 builder.RegisterELK();
 builder.RegisterEntityFrameworkCoreCommand<SQLContext, string>();
+builder.RegisterEntityFrameworkCoreQuery<SQLContext>();
 builder.RegisterCommandRepositories();
 builder.RegisterRedisCaching();
 builder.RegisterCommandQueryUseCases();
