@@ -8,7 +8,7 @@ using Domic.UseCase.FileUseCase.DTOs.ViewModels;
 
 namespace Domic.UseCase.ArticleUseCase.Caches;
 
-public class ArticleMemoryCache : IMemoryCacheSetter<List<ArticlesViewModel>>
+public class ArticleMemoryCache : IInternalDistributedCacheHandler<List<ArticlesViewModel>>
 {
     private readonly IArticleCommandRepository _articleCommandRepository;
 

@@ -8,16 +8,17 @@ namespace Domic.UseCase.ArticleUseCase.Queries.ReadAllPaginated;
 
 public class ReadAllPaginatedQueryHandler : IQueryHandler<ReadAllPaginatedQuery, PaginatedCollection<ArticlesViewModel>>
 {
-    private readonly ICacheService _cacheService;
+    private readonly IInternalDistributedCacheMediator _distributedCacheMediator;
 
-    public ReadAllPaginatedQueryHandler(ICacheService cacheService) => _cacheService = cacheService;
+    public ReadAllPaginatedQueryHandler(IInternalDistributedCacheMediator distributedCacheMediator) 
+        => _distributedCacheMediator = distributedCacheMediator;
 
     [WithValidation]
     public async Task<PaginatedCollection<ArticlesViewModel>> HandleAsync(ReadAllPaginatedQuery query, 
         CancellationToken cancellationToken
     )
     {
-        var result = await _cacheService.GetAsync<List<ArticlesViewModel>>(cancellationToken);
+        var result = await _distributedCacheMediator.GetAsync<List<ArticlesViewModel>>(cancellationToken);
 
         return result.ToPaginatedCollection(
             result.Count, query.CountPerPage ?? default, query.PageNumber ?? default, true
