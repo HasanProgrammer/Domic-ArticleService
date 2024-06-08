@@ -23,7 +23,7 @@ builder.RegisterELK();
 builder.RegisterEntityFrameworkCoreCommand<SQLContext, string>();
 builder.RegisterEntityFrameworkCoreQuery<SQLContext>();
 builder.RegisterCommandRepositories();
-builder.RegisterRedisCaching();
+builder.RegisterDistributedCaching();
 builder.RegisterCommandQueryUseCases();
 builder.RegisterGrpcServer();
 builder.RegisterMessageBroker();
@@ -82,4 +82,4 @@ application.Run();
 
 //For Integration Test
 
-public partial class Program {}
+public partial class Program;
