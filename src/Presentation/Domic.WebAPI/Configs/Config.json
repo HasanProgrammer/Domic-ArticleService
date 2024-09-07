@@ -1,6 +1,18 @@
 {
   "IsExternalBrokerConsumingAsync": false,
   "IsInternalBrokerConsumingAsync": false,
+  "ExternalTopicConfig": {
+    "Throttle": [
+      {
+        "Topic": "ArticleService-Retry-Category",
+        "Limitation": 1000
+      },
+      {
+        "Topic": "ArticleService-Retry-User",
+        "Limitation": 1000
+      }
+    ]
+  },
   "ExternalQueueConfig": {
     "Throttle": [
       {
