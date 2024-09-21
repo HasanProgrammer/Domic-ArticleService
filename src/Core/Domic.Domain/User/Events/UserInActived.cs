@@ -4,7 +4,7 @@ using Domic.Core.Domain.Contracts.Abstracts;
 
 namespace Domic.Domain.User.Events;
 
-[MessageBroker(Queue = Broker.Article_User_Queue)]
+[EventConfig(Queue = Broker.Article_User_Queue)]
 public class UserInActived : UpdateDomainEvent<string>
 {
     public required string OwnerUsername { get; init; }

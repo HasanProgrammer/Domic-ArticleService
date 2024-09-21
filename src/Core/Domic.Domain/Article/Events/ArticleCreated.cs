@@ -5,7 +5,7 @@ using Domic.Core.Domain.Enumerations;
 
 namespace Domic.Domain.Article.Events;
 
-[MessageBroker(ExchangeType = Exchange.FanOut, Exchange = Broker.Article_Article_Exchange)]
+[EventConfig(ExchangeType = Exchange.FanOut, Exchange = Broker.Article_Article_Exchange)]
 public class ArticleCreated : CreateDomainEvent<string>
 {
     //Article info ( Aggregte entity | Aggregte root )
