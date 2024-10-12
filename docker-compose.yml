@@ -5,13 +5,14 @@ services:
   domic.article.api:
     networks:
       - domic
-    image: article_service:1.0.0
-    deploy:
-      resources:
-        limits:
-          memory: 60M
-        reservations:
-          memory: 60M
+    image: article_service_api_image:1.0.0
+    container_name: "article_service_api"
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 60M
+#        reservations:
+#          memory: 60M
     build:
       context: .
       dockerfile: Dockerfile
@@ -22,29 +23,29 @@ services:
       - log:/app/CoreLogs
       - ~\.aspnet\https\:/https/
     environment:
-      - Elastic-Host=http://localhost:9200
-      - Elastic-Index=
-      - Elastic-Username=
-      - Elastic-Password=
-      - E-RabbitMQ-Host=host.docker.internal
+      - Elastic-Host=http://domic.elastic.search:9200
+      - Elastic-Index=article
+      - Elastic-Username=domic
+      - Elastic-Password=Domic123!@#
+      - E-RabbitMQ-Host=domic.rabbit.mq
       - E-RabbitMQ-Port=5672
-      - E-RabbitMQ-Username=guest
-      - E-RabbitMQ-Password=guest
+      - E-RabbitMQ-Username=domic
+      - E-RabbitMQ-Password=Domic123!@#
       - I-RabbitMQ-Host=
       - I-RabbitMQ-Port=
       - I-RabbitMQ-Username=
       - I-RabbitMQ-Password=
-      - E-RedisConnectionString=domic.article.redis:6379
-      - I-RedisConnectionString=domic.article.redis:6379
+      - E-RedisConnectionString=domic.redis:6379
+      - I-RedisConnectionString=domic.article.redis:1500
       - MongoConnectionString=
-      - C-SqlServerConnectionString=Server=domic.article.sql.server,1433;Database=ArticleService;User ID=sa;Password=Hasan313@@313!!;MultipleActiveResultSets=true;Integrated Security=false;
+      - C-SqlServerConnectionString=Server=domic.article.sql.server,1433;Database=ArticleService;User ID=sa;Password=Domic123!@#;MultipleActiveResultSets=true;Integrated Security=false;
       - Q-SqlServerConnectionString=
       - Host=domic.article.api
       - Port=443
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=Dotris313@313%%
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/Karami.WebAPI.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=Domic123!@#
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/Domic.WebAPI.pfx
     depends_on:
       - domic.article.sql.server
       - domic.article.redis
@@ -58,7 +59,7 @@ services:
       - 1500:1433
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=Hasan313@@313!!
+      - SA_PASSWORD=Domic123!@#
   
   domic.article.redis:
     networks:
