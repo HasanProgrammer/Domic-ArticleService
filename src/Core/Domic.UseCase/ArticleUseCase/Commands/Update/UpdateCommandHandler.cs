@@ -80,4 +80,7 @@ public class UpdateCommandHandler : ICommandHandler<UpdateCommand, string>
 
         return targetArticle.Id;
     }
+
+    public Task AfterTransactionHandleAsync(UpdateCommand message, CancellationToken cancellationToken)
+        => Task.CompletedTask;
 }

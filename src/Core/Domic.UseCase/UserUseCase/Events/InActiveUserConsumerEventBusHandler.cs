@@ -32,4 +32,6 @@ public class InActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<User
             _articleCommandRepository.Change(article);
         }
     }
+
+    public void AfterTransactionHandle(UserInActived @event){}
 }

@@ -30,4 +30,6 @@ public class ActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<UserAc
             _articleCommandRepository.Change(article);
         }
     }
+
+    public void AfterTransactionHandle(UserActived @event){}
 }

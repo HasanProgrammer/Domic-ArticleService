@@ -71,4 +71,7 @@ public class CreateCommandHandler : ICommandHandler<CreateCommand, string>
 
         return newArticle.Id;
     }
+
+    public Task AfterTransactionHandleAsync(CreateCommand message, CancellationToken cancellationToken)
+        => Task.CompletedTask;
 }

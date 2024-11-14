@@ -43,4 +43,6 @@ public class DeleteCategoryConsumerEventBusHandler : IConsumerEventBusHandler<Ca
             #endregion
         }
     }
+
+    public void AfterTransactionHandle(CategoryDeleted @event){}
 }
