@@ -32,7 +32,7 @@
         "E-Kafka-Username" : "",
         "E-Kafka-Password" : "",
         "E-RedisConnectionString": "127.0.0.1:6379",
-        "I-RedisConnectionString": "",
+        "I-RedisConnectionString": "127.0.0.1:6379",
         "MongoConnectionString": "",
         "C-SqlServerConnectionString": "Server=127.0.0.1,1633;Database=C-ArticleService;User ID=sa;Password=Domic123!@#;MultipleActiveResultSets=true;Integrated Security=false;",
         "Q-SqlServerConnectionString": "",
