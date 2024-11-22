@@ -22,7 +22,9 @@ public class DeleteCategoryConsumerEventBusHandler : IConsumerEventBusHandler<Ca
         _fileCommandRepository    = fileCommandRepository;
         _articleCommandRepository = articleCommandRepository;
     }
-    
+
+    public void BeforeHandle(CategoryDeleted @event){}
+
     [WithCleanCache(Keies = Cache.Articles)]
     [TransactionConfig(Type = TransactionType.Command)]
     public void Handle(CategoryDeleted @event)
@@ -44,5 +46,5 @@ public class DeleteCategoryConsumerEventBusHandler : IConsumerEventBusHandler<Ca
         }
     }
 
-    public void AfterTransactionHandle(CategoryDeleted @event){}
+    public void AfterHandle(CategoryDeleted @event){}
 }

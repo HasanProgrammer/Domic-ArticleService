@@ -19,7 +19,9 @@ public class InActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<User
         _dotrisDateTime           = dotrisDateTime;
         _articleCommandRepository = articleCommandRepository;
     }
-    
+
+    public void BeforeHandle(UserInActived @event){}
+
     [TransactionConfig(Type = TransactionType.Command)]
     public void Handle(UserInActived @event)
     {
@@ -33,5 +35,5 @@ public class InActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<User
         }
     }
 
-    public void AfterTransactionHandle(UserInActived @event){}
+    public void AfterHandle(UserInActived @event){}
 }

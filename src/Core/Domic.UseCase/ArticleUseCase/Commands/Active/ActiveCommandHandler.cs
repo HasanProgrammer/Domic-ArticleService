@@ -27,6 +27,8 @@ public class ActiveCommandHandler : ICommandHandler<ActiveCommand, string>
         _articleCommandRepository = articleCommandRepository;
     }
 
+    public Task BeforeHandleAsync(ActiveCommand command, CancellationToken cancellationToken) => Task.CompletedTask;
+
     [WithValidation]
     [WithTransaction]
     public Task<string> HandleAsync(ActiveCommand command, CancellationToken cancellationToken)
@@ -42,6 +44,6 @@ public class ActiveCommandHandler : ICommandHandler<ActiveCommand, string>
         return Task.FromResult(article.Id);
     }
 
-    public Task AfterTransactionHandleAsync(ActiveCommand message, CancellationToken cancellationToken)
+    public Task AfterHandleAsync(ActiveCommand command, CancellationToken cancellationToken)
         => Task.CompletedTask;
 }

@@ -31,6 +31,8 @@ public class CreateCommandHandler : ICommandHandler<CreateCommand, string>
         _idGenerator              = idGenerator;
     }
 
+    public Task BeforeHandleAsync(CreateCommand command, CancellationToken cancellationToken) => Task.CompletedTask;
+
     [WithValidation]
     [WithTransaction]
     public async Task<string> HandleAsync(CreateCommand command, CancellationToken cancellationToken)
@@ -72,6 +74,6 @@ public class CreateCommandHandler : ICommandHandler<CreateCommand, string>
         return newArticle.Id;
     }
 
-    public Task AfterTransactionHandleAsync(CreateCommand message, CancellationToken cancellationToken)
+    public Task AfterHandleAsync(CreateCommand command, CancellationToken cancellationToken)
         => Task.CompletedTask;
 }

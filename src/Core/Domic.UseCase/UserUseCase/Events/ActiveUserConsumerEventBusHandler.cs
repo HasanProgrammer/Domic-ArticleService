@@ -18,6 +18,8 @@ public class ActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<UserAc
         _articleCommandRepository = articleCommandRepository;
     }
 
+    public void BeforeHandle(UserActived @event){}
+
     [TransactionConfig(Type = TransactionType.Command)]
     public void Handle(UserActived @event)
     {
@@ -31,5 +33,5 @@ public class ActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<UserAc
         }
     }
 
-    public void AfterTransactionHandle(UserActived @event){}
+    public void AfterHandle(UserActived @event){}
 }
