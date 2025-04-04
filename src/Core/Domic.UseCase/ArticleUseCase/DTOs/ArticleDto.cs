@@ -1,9 +1,8 @@
-using Domic.UseCase.FileUseCase.DTOs.ViewModels;
-using Domic.Core.UseCase.DTOs.ViewModels;
+using Domic.UseCase.FileUseCase.DTOs;
 
-namespace Domic.UseCase.ArticleUseCase.DTOs.ViewModels;
+namespace Domic.UseCase.ArticleUseCase.DTOs;
 
-public class ArticlesViewModel : ViewModel
+public class ArticleDto
 {
     public string Id                       { get; set; }
     public string CategoryId               { get; set; }
@@ -19,5 +18,5 @@ public class ArticlesViewModel : ViewModel
     
     /*---------------------------------------------------------------*/
     
-    public IEnumerable<FilesViewModel> Files { get; set; }
+    public IEnumerable<FileDto> Files { get; set; }
 }

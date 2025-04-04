@@ -25,7 +25,7 @@ public static partial class RpcRequestExtension
         if (typeof(T) == typeof(CheckExistCommand))
         {
             Request = new CheckExistCommand {
-                ArticleId = request.TargetId.Value
+                Id = request.TargetId.Value
             };
         }
 
@@ -130,7 +130,7 @@ public partial class RpcRequestExtension
         {
             Request = new ActiveCommand {
                 Token    = token ,
-                TargetId = request.TargetId.Value
+                Id = request.TargetId.Value
             };
         }
 
@@ -152,7 +152,7 @@ public partial class RpcRequestExtension
         {
             Request = new InActiveCommand {
                 Token    = token ,
-                TargetId = request.TargetId.Value
+                Id = request.TargetId.Value
             };
         }
 
@@ -174,7 +174,7 @@ public partial class RpcRequestExtension
         {
             Request = new DeleteCommand {
                 Token    = token ,
-                TargetId = request.TargetId.Value
+                Id = request.TargetId.Value
             };
         }
 

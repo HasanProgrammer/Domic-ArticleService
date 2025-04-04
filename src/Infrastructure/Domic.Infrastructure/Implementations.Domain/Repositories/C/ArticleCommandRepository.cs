@@ -1,4 +1,5 @@
-﻿using Domic.Domain.Article.Contracts.Interfaces;
+﻿using Domic.Core.Domain.Enumerations;
+using Domic.Domain.Article.Contracts.Interfaces;
 using Domic.Domain.Article.Entities;
 using Domic.Persistence.Contexts.C;
 using Microsoft.EntityFrameworkCore;
@@ -6,39 +7,66 @@ using Microsoft.EntityFrameworkCore;
 namespace Domic.Infrastructure.Implementations.Domain.Repositories.C;
 
 //Config
-public partial class ArticleCommandRepository : IArticleCommandRepository
+public partial class ArticleCommandRepository(SQLContext sqlContext) : IArticleCommandRepository
 {
-    private readonly SQLContext _sqlContext;
-
-    public ArticleCommandRepository(SQLContext sqlContext) => _sqlContext = sqlContext;
 }
 
 //Transaction
 public partial class ArticleCommandRepository
 {
-    public async Task AddAsync(Article entity, CancellationToken cancellationToken) 
-        => await _sqlContext.Articles.AddAsync(entity);
+    public Task AddAsync(Article entity, CancellationToken cancellationToken) 
+    {
+        sqlContext.Articles.Add(entity);
 
-    public void RemoveRange(IEnumerable<Article> entities) => _sqlContext.Articles.RemoveRange(entities);
+        return Task.CompletedTask;
+    }
 
-    public void Change(Article entity) => _sqlContext.Articles.Update(entity);
+    public Task ChangeAsync(Article entity, CancellationToken cancellationToken)
+    {
+        sqlContext.Articles.Update(entity);
+
+        return Task.CompletedTask;
+    }
+
+    public Task RemoveRangeAsync(IEnumerable<Article> entities, CancellationToken cancellationToken)
+    {
+        sqlContext.Articles.RemoveRange(entities);
+
+        return Task.CompletedTask;
+    }
 }
 
 //Query
 public partial class ArticleCommandRepository
 {
-    public async Task<Article> FindByIdAsync(object id, CancellationToken cancellationToken)
-        => await _sqlContext.Articles.FirstOrDefaultAsync(article => article.Id.Equals(id), cancellationToken);
+    public Task<Article> FindByIdAsync(object id, CancellationToken cancellationToken)
+        => sqlContext.Articles.FirstOrDefaultAsync(article => article.Id == id as string, cancellationToken);
 
-    public async Task<Article> FindByTitleAsync(string title, CancellationToken cancellationToken)
-        => await _sqlContext.Articles.FirstOrDefaultAsync(article => article.Title.Value.Equals(title));
+    public Task<Article> FindByTitleAsync(string title, CancellationToken cancellationToken)
+        => sqlContext.Articles.AsNoTracking().FirstOrDefaultAsync(article => article.Title.Value == title, cancellationToken);
 
-    public async Task<List<Article>> FindByCategoryIdEagerLoadingAsync(string categoryId,
+    public Task<List<Article>> FindByCategoryIdEagerLoadingAsync(string categoryId,
         CancellationToken cancellationToken
-    ) => await _sqlContext.Articles.Where(article => article.CategoryId.Equals(categoryId))
-                                   .Include(article => article.Files)
-                                   .ToListAsync(cancellationToken);
+    ) => sqlContext.Articles.Where(article => article.CategoryId == categoryId)
+                            .Include(article => article.Files)
+                            .ToListAsync(cancellationToken);
 
-    public List<Article> FindByUserId(string userId)
-        => _sqlContext.Articles.Where(article => article.CreatedBy.Equals(userId)).ToList();
+    public Task<List<Article>> FindByUserIdAsync(string userId, CancellationToken cancellationToken)
+        => sqlContext.Articles.AsNoTracking().Where(article => article.CreatedBy == userId).ToListAsync(cancellationToken);
+
+    public Task<List<Article>> FindAllEagerLoadingWithOrderingAsync(Order order, bool isAscending, CancellationToken cancellationToken)
+    {
+        var query = sqlContext.Articles.AsNoTracking();
+
+        if (order == Order.Date)
+            query = isAscending
+                ? query.OrderBy(article => article.CreatedAt.EnglishDate.Value) 
+                : query.OrderByDescending(article => article.CreatedAt.EnglishDate.Value);
+        else if (order == Order.Id)
+            query = isAscending
+                ? query.OrderBy(article => article.Id)
+                : query.OrderByDescending(article => article.Id);
+
+        return query.Include(article => article.Files).ToListAsync(cancellationToken);    
+    }
 }

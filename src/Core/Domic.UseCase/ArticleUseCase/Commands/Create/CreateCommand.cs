@@ -3,9 +3,7 @@
 namespace Domic.UseCase.ArticleUseCase.Commands.Create;
 
 public class CreateCommand : ICommand<string>
-{
-    public string Token { get; set; }
-    
+{    
     //Article
     
     public string UserId     { get; set; }

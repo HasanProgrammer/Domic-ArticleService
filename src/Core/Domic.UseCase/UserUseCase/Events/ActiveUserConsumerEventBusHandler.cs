@@ -23,7 +23,7 @@ public class ActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<UserAc
     [TransactionConfig(Type = TransactionType.Command)]
     public void Handle(UserActived @event)
     {
-        var articles = _articleCommandRepository.FindByUserId(@event.Id);
+        var articles = _articleCommandRepository.FindByUserIdAsync(@event.Id);
 
         foreach (var article in articles)
         {

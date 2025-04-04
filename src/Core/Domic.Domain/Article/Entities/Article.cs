@@ -36,9 +36,9 @@ public class Article : Entity<string>
     /// 
     /// </summary>
     /// <param name="dateTime"></param>
-    /// <param name="id"></param>
-    /// <param name="createdBy"></param>
-    /// <param name="createdRole"></param>
+    /// <param name="globalUniqueIdGenerator"></param>
+    /// <param name="serializer"></param>
+    /// <param name="identityUser"></param>
     /// <param name="categoryId"></param>
     /// <param name="title"></param>
     /// <param name="summary"></param>
@@ -47,28 +47,29 @@ public class Article : Entity<string>
     /// <param name="filePath"></param>
     /// <param name="fileName"></param>
     /// <param name="fileExtension"></param>
-    public Article(IDateTime dateTime, string id, string createdBy, string createdRole, string categoryId, 
-        string title, string summary, string body, string fileId, string filePath, string fileName, string fileExtension
+    public Article(IDateTime dateTime, IGlobalUniqueIdGenerator globalUniqueIdGenerator, ISerializer serializer,
+        IIdentityUser identityUser, string categoryId, string title, string summary, string body, string fileId, 
+        string filePath, string fileName, string fileExtension
     )
     {
         var nowDateTime        = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
 
-        Id          = id;
+        Id          = globalUniqueIdGenerator.GetRandom(6);
         CategoryId  = categoryId;
-        CreatedBy   = createdBy;
-        CreatedRole = createdRole;
+        IsActive    = IsActive.Active;
         Title       = new Title(title);
         Summary     = new Summary(summary);
         Body        = new Body(body);
-        IsActive    = IsActive.Active;
+        
+        //audit
+        CreatedBy   = identityUser.GetIdentity();
         CreatedAt   = new CreatedAt(nowDateTime, nowPersianDateTime);
+        CreatedRole = serializer.Serialize(identityUser.GetRoles());
         
         AddEvent(
             new ArticleCreated {
                 Id                    = Id                 ,
-                CreatedBy             = createdBy          ,
-                CreatedRole           = createdRole        ,
                 CategoryId            = categoryId         ,
                 Title                 = title              ,
                 Summary               = summary            ,
@@ -77,6 +78,8 @@ public class Article : Entity<string>
                 FilePath              = filePath           ,
                 FileName              = fileName           ,
                 FileExtension         = fileExtension      ,
+                CreatedBy             = CreatedBy          ,
+                CreatedRole           = CreatedRole        ,
                 CreatedAt_EnglishDate = nowDateTime        ,
                 CreatedAt_PersianDate = nowPersianDateTime
             }
@@ -91,9 +94,9 @@ public class Article : Entity<string>
     /// 
     /// </summary>
     /// <param name="dateTime"></param>
+    /// <param name="identityUser"></param>
+    /// <param name="serializer"></param>
     /// <param name="categoryId"></param>
-    /// <param name="updatedBy"></param>
-    /// <param name="updatedRole"></param>
     /// <param name="title"></param>
     /// <param name="summary"></param>
     /// <param name="body"></param>
@@ -101,27 +104,28 @@ public class Article : Entity<string>
     /// <param name="filePath"></param>
     /// <param name="fileName"></param>
     /// <param name="fileExtension"></param>
-    public void Change(IDateTime dateTime, string categoryId, string updatedBy, string updatedRole, string title, 
-        string summary, string body, string fileId, string filePath, string fileName, string fileExtension
+    public void Change(IDateTime dateTime, IIdentityUser identityUser, ISerializer serializer,
+        string categoryId, string title, string summary, string body, string fileId, string filePath, 
+        string fileName, string fileExtension
     )
     {
         var nowDateTime        = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
 
         CategoryId  = categoryId;
-        UpdatedBy   = updatedBy;
-        UpdatedRole = updatedRole;
         Title       = new Title(title);
         Summary     = new Summary(summary);
         Body        = new Body(body);
+        
+        //audit
+        UpdatedBy   = identityUser.GetIdentity();
+        UpdatedRole = serializer.Serialize(identityUser.GetRoles());
         UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
         
         AddEvent(
             new ArticleUpdated {
                 Id                    = Id            ,
                 CategoryId            = categoryId    ,
-                UpdatedBy             = updatedBy     ,
-                UpdatedRole           = updatedRole   ,
                 Title                 = title         ,
                 Summary               = summary       ,
                 Body                  = body          ,
@@ -129,12 +133,14 @@ public class Article : Entity<string>
                 FileName              = fileName      ,
                 FileExtension         = fileExtension ,
                 FilePath              = filePath      ,
+                UpdatedBy             = UpdatedBy     ,
+                UpdatedRole           = UpdatedRole   ,
                 UpdatedAt_EnglishDate = nowDateTime   ,
                 UpdatedAt_PersianDate = nowPersianDateTime
             }
         );
     }
-    
+
     /// <summary>
     /// 
     /// </summary>
@@ -147,21 +153,52 @@ public class Article : Entity<string>
         var nowDateTime = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
         
-        IsActive    = IsActive.Active;
+        IsActive = IsActive.Active;
+        
+        //audit
         UpdatedBy   = updatedBy;
         UpdatedRole = updatedRole;
         UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
-        
+
         if(raiseEvent)
             AddEvent(
                 new ArticleActived {
                     Id                    = Id          ,
-                    UpdatedBy             = updatedBy   ,
-                    UpdatedRole           = updatedRole ,
+                    UpdatedBy             = UpdatedBy   ,
+                    UpdatedRole           = UpdatedRole ,
                     UpdatedAt_EnglishDate = nowDateTime ,
                     UpdatedAt_PersianDate = nowPersianDateTime
                 }
             );
+    }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <param name="identityUser"></param>
+    /// <param name="serializer"></param>
+    public void Active(IDateTime dateTime, IIdentityUser identityUser, ISerializer serializer)
+    {
+        var nowDateTime = DateTime.Now;
+        var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
+        
+        IsActive = IsActive.Active;
+        
+        //audit
+        UpdatedBy   = identityUser.GetIdentity();
+        UpdatedRole = serializer.Serialize(identityUser.GetRoles());
+        UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
+        
+        AddEvent(
+            new ArticleActived {
+                Id                    = Id                    ,
+                UpdatedBy             = UpdatedBy             ,
+                UpdatedRole           = UpdatedRole           ,
+                UpdatedAt_EnglishDate = nowDateTime           ,
+                UpdatedAt_PersianDate = nowPersianDateTime
+            }
+        );
     }
     
     /// <summary>
@@ -176,7 +213,9 @@ public class Article : Entity<string>
         var nowDateTime = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
         
-        IsActive    = IsActive.InActive;
+        IsActive = IsActive.InActive;
+        
+        //audit
         UpdatedBy   = updatedBy;
         UpdatedRole = updatedRole;
         UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
@@ -184,10 +223,10 @@ public class Article : Entity<string>
         if(raiseEvent)
             AddEvent(
                 new ArticleInActived {
-                    Id                    = Id          ,
-                    UpdatedBy             = updatedBy   ,
-                    UpdatedRole           = updatedRole ,
-                    UpdatedAt_EnglishDate = nowDateTime ,
+                    Id                    = Id                    ,
+                    UpdatedBy             = UpdatedBy             ,
+                    UpdatedRole           = UpdatedRole           ,
+                    UpdatedAt_EnglishDate = nowDateTime           ,
                     UpdatedAt_PersianDate = nowPersianDateTime
                 }
             );
@@ -197,25 +236,59 @@ public class Article : Entity<string>
     /// 
     /// </summary>
     /// <param name="dateTime"></param>
-    /// <param name="updatedBy"></param>
-    /// <param name="updatedRole"></param>
-    public void Delete(IDateTime dateTime, string updatedBy, string updatedRole, bool raiseEvent = true)
+    /// <param name="identityUser"></param>
+    /// <param name="serializer"></param>
+    /// <param name="raiseEvent"></param>
+    public void InActive(IDateTime dateTime, IIdentityUser identityUser, ISerializer serializer)
+    {
+        var nowDateTime = DateTime.Now;
+        var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
+        
+        IsActive    = IsActive.InActive;
+        
+        //audit
+        UpdatedBy   = identityUser.GetIdentity();
+        UpdatedRole = serializer.Serialize(identityUser.GetRoles());
+        UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
+        
+        AddEvent(
+            new ArticleInActived {
+                Id                    = Id                    ,
+                UpdatedBy             = UpdatedBy             ,
+                UpdatedRole           = UpdatedRole           ,
+                UpdatedAt_EnglishDate = nowDateTime           ,
+                UpdatedAt_PersianDate = nowPersianDateTime
+            }
+        );
+            
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <param name="identityUser"></param>
+    /// <param name="serializer"></param>
+    /// <param name="raiseEvent"></param>
+    public void Delete(IDateTime dateTime, IIdentityUser identityUser, ISerializer serializer, bool raiseEvent = true)
     {
         var nowDateTime = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
         
         IsDeleted   = IsDeleted.Delete;
-        UpdatedBy   = updatedBy;
-        UpdatedRole = updatedRole;
+        
+        //audit
+        UpdatedBy   = identityUser.GetIdentity();
+        UpdatedRole = serializer.Serialize(identityUser.GetRoles());
         UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
         
         if(raiseEvent)
             AddEvent(
                 new ArticleDeleted {
-                    Id                    = Id          ,
-                    UpdatedBy             = updatedBy   ,
-                    UpdatedRole           = updatedRole ,
-                    UpdatedAt_EnglishDate = nowDateTime ,
+                    Id                    = Id                    ,
+                    UpdatedBy             = UpdatedBy             ,
+                    UpdatedRole           = UpdatedRole           ,
+                    UpdatedAt_EnglishDate = nowDateTime           ,
                     UpdatedAt_PersianDate = nowPersianDateTime
                 }
             );

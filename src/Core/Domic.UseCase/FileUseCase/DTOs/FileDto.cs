@@ -1,8 +1,6 @@
-using Domic.Core.UseCase.DTOs.ViewModels;
+namespace Domic.UseCase.FileUseCase.DTOs;
 
-namespace Domic.UseCase.FileUseCase.DTOs.ViewModels;
-
-public class FilesViewModel : ViewModel
+public class FileDto
 {
     public string Id        { get; set; }
     public string Path      { get; set; }

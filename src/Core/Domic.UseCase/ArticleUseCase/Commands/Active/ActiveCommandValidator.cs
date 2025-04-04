@@ -4,20 +4,15 @@ using Domic.Domain.Article.Contracts.Interfaces;
 
 namespace Domic.UseCase.ArticleUseCase.Commands.Active;
 
-public class ActiveCommandValidator : IValidator<ActiveCommand>
+public class ActiveCommandValidator(IArticleCommandRepository articleCommandRepository) : IValidator<ActiveCommand>
 {
-    private readonly IArticleCommandRepository _articleCommandRepository;
-
-    public ActiveCommandValidator(IArticleCommandRepository articleCommandRepository) 
-        => _articleCommandRepository = articleCommandRepository;
-
     public async Task<object> ValidateAsync(ActiveCommand input, CancellationToken cancellationToken)
     {
-        var article = await _articleCommandRepository.FindByIdAsync(input.TargetId, cancellationToken);
+        var article = await articleCommandRepository.FindByIdAsync(input.Id, cancellationToken);
 
         if (article is null)
             throw new UseCaseException(
-                string.Format("موجودیتی با شناسه {0} وجود خارجی ندارد !", input.TargetId ?? "_خالی_")
+                string.Format("موجودیتی با شناسه {0} وجود خارجی ندارد !", input.Id ?? "_خالی_")
             );
 
         return article;

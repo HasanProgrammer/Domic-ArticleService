@@ -31,15 +31,6 @@ public interface IArticleCommandRepository : ICommandRepository<Entities.Article
     /// <param name="userId"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public List<Entities.Article> FindByUserId(string userId) => throw new NotImplementedException();
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="userId"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
     public Task<List<Entities.Article>> FindByUserIdAsync(string userId, CancellationToken cancellationToken)
         => throw new NotImplementedException();
 }

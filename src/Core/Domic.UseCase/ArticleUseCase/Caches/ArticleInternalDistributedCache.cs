@@ -1,27 +1,23 @@
-﻿using Domic.Core.Common.ClassConsts;
+using Domic.Core.Common.ClassConsts;
 using Domic.Core.Domain.Enumerations;
 using Domic.Core.UseCase.Attributes;
 using Domic.Core.UseCase.Contracts.Interfaces;
 using Domic.Domain.Article.Contracts.Interfaces;
-using Domic.UseCase.ArticleUseCase.DTOs.ViewModels;
-using Domic.UseCase.FileUseCase.DTOs.ViewModels;
+using Domic.UseCase.ArticleUseCase.DTOs;
+using Domic.UseCase.FileUseCase.DTOs;
 
 namespace Domic.UseCase.ArticleUseCase.Caches;
 
-public class ArticleMemoryCache : IInternalDistributedCacheHandler<List<ArticlesViewModel>>
+public class ArticleInternalDistributedCache(IArticleCommandRepository articleCommandRepository) 
+    : IInternalDistributedCacheHandler<List<ArticleDto>>
 {
-    private readonly IArticleCommandRepository _articleCommandRepository;
-
-    public ArticleMemoryCache(IArticleCommandRepository articleCommandRepository)
-        => _articleCommandRepository = articleCommandRepository;
-    
     [Config(Key = Cache.Articles, Ttl = 24*60)]
-    public async Task<List<ArticlesViewModel>> SetAsync(CancellationToken cancellationToken)
+    public async Task<List<ArticleDto>> SetAsync(CancellationToken cancellationToken)
     {
         var query =
-            await _articleCommandRepository.FindAllEagerLoadingWithOrderingAsync(Order.Date, false, cancellationToken);
+            await articleCommandRepository.FindAllEagerLoadingWithOrderingAsync(Order.Date, false, cancellationToken);
 
-        return query.Select(article => new ArticlesViewModel {
+        return query.Select(article => new ArticleDto {
             Id                    = article.Id                          ,
             CreatedBy             = article.CreatedBy                   ,
             CategoryId            = article.CategoryId                  ,
@@ -33,7 +29,7 @@ public class ArticleMemoryCache : IInternalDistributedCacheHandler<List<Articles
             CreatedAt_PersianDate = article.CreatedAt.PersianDate       ,
             UpdatedAt_EnglishDate = article.UpdatedAt.EnglishDate       ,
             UpdatedAt_PersianDate = article.UpdatedAt.PersianDate       ,
-            Files = article.Files.Select(file => new FilesViewModel {
+            Files = article.Files.Select(file => new FileDto {
                 Id        = file.Id         ,
                 Path      = file.Path.Value ,
                 Name      = file.Name.Value ,

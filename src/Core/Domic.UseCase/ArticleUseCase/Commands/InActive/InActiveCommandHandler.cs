@@ -5,43 +5,32 @@ using Domic.Core.UseCase.Attributes;
 using Domic.Core.UseCase.Contracts.Interfaces;
 using Domic.Domain.Article.Contracts.Interfaces;
 using Domic.Domain.Article.Entities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Domic.UseCase.ArticleUseCase.Commands.InActive;
 
-public class InActiveCommandHandler : ICommandHandler<InActiveCommand, string>
+public class InActiveCommandHandler(
+    IDateTime dateTime, 
+    ISerializer serializer, 
+    IArticleCommandRepository articleCommandRepository,
+    [FromKeyedServices("Http2")] IIdentityUser identityUser
+) : ICommandHandler<InActiveCommand, string>
 {
     private readonly object _validationResult;
-    
-    private readonly IDateTime                 _dateTime;
-    private readonly ISerializer               _serializer;
-    private readonly IJsonWebToken             _jsonWebToken;
-    private readonly IArticleCommandRepository _articleCommandRepository;
-
-    public InActiveCommandHandler(IArticleCommandRepository articleCommandRepository, IDateTime dateTime, 
-        ISerializer serializer, IJsonWebToken jsonWebToken
-    )
-    {
-        _dateTime                 = dateTime;
-        _serializer               = serializer;
-        _jsonWebToken             = jsonWebToken;
-        _articleCommandRepository = articleCommandRepository;
-    }
 
     public Task BeforeHandleAsync(InActiveCommand command, CancellationToken cancellationToken) => Task.CompletedTask;
 
     [WithValidation]
     [WithTransaction]
-    public Task<string> HandleAsync(InActiveCommand command, CancellationToken cancellationToken)
+    public async Task<string> HandleAsync(InActiveCommand command, CancellationToken cancellationToken)
     {
-        var article     = _validationResult as Article;
-        var updatedBy   = _jsonWebToken.GetIdentityUserId(command.Token);
-        var updatedRole = _serializer.Serialize( _jsonWebToken.GetRoles(command.Token) );
+        var article = _validationResult as Article;
         
-        article.InActive(_dateTime, updatedBy, updatedRole);
+        article.InActive(dateTime, identityUser, serializer);
 
-        _articleCommandRepository.Change(article);
+        await articleCommandRepository.ChangeAsync(article, cancellationToken);
 
-        return Task.FromResult(article.Id);
+        return article.Id;
     }
 
     public Task AfterHandleAsync(InActiveCommand command, CancellationToken cancellationToken)

@@ -25,7 +25,7 @@ public class InActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<User
     [TransactionConfig(Type = TransactionType.Command)]
     public void Handle(UserInActived @event)
     {
-        var articles = _articleCommandRepository.FindByUserId(@event.Id);
+        var articles = _articleCommandRepository.FindByUserIdAsync(@event.Id);
 
         foreach (var article in articles)
         {

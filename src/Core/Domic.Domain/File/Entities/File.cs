@@ -5,7 +5,6 @@ using Domic.Core.Domain.Contracts.Abstracts;
 using Domic.Core.Domain.Contracts.Interfaces;
 using Domic.Core.Domain.Enumerations;
 using Domic.Core.Domain.ValueObjects;
-using Path = Domic.Domain.File.ValueObjects.Path;
 
 namespace Domic.Domain.File.Entities;
 
@@ -36,29 +35,31 @@ public class File : Entity<string>
     /// 
     /// </summary>
     /// <param name="dateTime"></param>
-    /// <param name="id"></param>
+    /// <param name="globalUniqueIdGenerator"></param>
+    /// <param name="serializer"></param>
+    /// <param name="identityUser"></param>
     /// <param name="articleId"></param>
-    /// <param name="createdBy"></param>
-    /// <param name="createdRole"></param>
     /// <param name="path"></param>
     /// <param name="fileName"></param>
     /// <param name="extension"></param>
-    public File(IDateTime dateTime, string id, string articleId, string createdBy, string createdRole,
-        string path, string fileName, string extension
+    public File(IDateTime dateTime, IGlobalUniqueIdGenerator globalUniqueIdGenerator, ISerializer serializer,
+        IIdentityUser identityUser, string articleId, string path, string fileName, string extension
     )
     {
         var nowDateTime        = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
 
-        Id          = id;
+        Id          =   globalUniqueIdGenerator.GetRandom(6);
         ArticleId   = articleId;
-        CreatedBy   = createdBy;
-        CreatedRole = createdRole;
         Path        = new ValueObjects.Path(path);
         Name        = new Name(fileName);
         Extension   = new Extension(extension);
         IsActive    = IsActive.Active;
+
+        //audit
+        CreatedBy   = identityUser.GetIdentity();
         CreatedAt   = new CreatedAt(nowDateTime, nowPersianDateTime);
+        CreatedRole = serializer.Serialize(identityUser.GetRoles());
     }
 
     /*---------------------------------------------------------------*/
@@ -69,15 +70,17 @@ public class File : Entity<string>
     /// 
     /// </summary>
     /// <param name="dateTime"></param>
-    /// <param name="updatedBy"></param>
-    /// <param name="updatedRole"></param>
-    public void Delete(IDateTime dateTime, string updatedBy, string updatedRole)
+    /// <param name="identityUser"></param>
+    /// <param name="serializer"></param>
+    public void Delete(IDateTime dateTime, IIdentityUser identityUser, ISerializer serializer)
     {
         var nowDateTime = DateTime.Now;
         
-        IsDeleted   = IsDeleted.Delete;
-        UpdatedBy   = updatedBy;
-        UpdatedRole = updatedRole;
+        IsDeleted = IsDeleted.Delete;
+
+        //audit
+        UpdatedBy   = identityUser.GetIdentity();
+        UpdatedRole = serializer.Serialize(identityUser.GetRoles());
         UpdatedAt   = new UpdatedAt(nowDateTime, dateTime.ToPersianShortDate(nowDateTime));
     }
 }

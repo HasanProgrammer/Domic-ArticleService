@@ -5,43 +5,32 @@ using Domic.Core.UseCase.Attributes;
 using Domic.Core.UseCase.Contracts.Interfaces;
 using Domic.Domain.Article.Contracts.Interfaces;
 using Domic.Domain.Article.Entities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Domic.UseCase.ArticleUseCase.Commands.Delete;
 
-public class DeleteCommandHandler : ICommandHandler<DeleteCommand, string>
+public class DeleteCommandHandler(
+    IDateTime dateTime, 
+    ISerializer serializer,
+    IArticleCommandRepository articleCommandRepository,
+    [FromKeyedServices("Http2")] IIdentityUser identityUser
+) : ICommandHandler<DeleteCommand, string>
 {
     private readonly object _validationResult;
-    
-    private readonly IDateTime                 _dateTime;
-    private readonly ISerializer               _serializer;
-    private readonly IJsonWebToken             _jsonWebToken;
-    private readonly IArticleCommandRepository _articleCommandRepository;
-
-    public DeleteCommandHandler(IArticleCommandRepository articleCommandRepository, IDateTime dateTime, 
-        ISerializer serializer, IJsonWebToken jsonWebToken
-    )
-    {
-        _dateTime                 = dateTime;
-        _serializer               = serializer;
-        _jsonWebToken             = jsonWebToken;
-        _articleCommandRepository = articleCommandRepository;
-    }
 
     public Task BeforeHandleAsync(DeleteCommand command, CancellationToken cancellationToken) => Task.CompletedTask;
 
     [WithValidation]
     [WithTransaction]
-    public Task<string> HandleAsync(DeleteCommand command, CancellationToken cancellationToken)
+    public async Task<string> HandleAsync(DeleteCommand command, CancellationToken cancellationToken)
     {
-        var article     = _validationResult as Article;
-        var updatedBy   = _jsonWebToken.GetIdentityUserId(command.Token);
-        var updatedRole = _serializer.Serialize( _jsonWebToken.GetRoles(command.Token) );
+        var article = _validationResult as Article;
         
-        article.Delete(_dateTime, updatedBy, updatedRole);
+        article.Delete(dateTime, identityUser, serializer);
 
-        _articleCommandRepository.Change(article);
+        await articleCommandRepository.ChangeAsync(article, cancellationToken);
 
-        return Task.FromResult(article.Id);
+        return article.Id;
     }
 
     public Task AfterHandleAsync(DeleteCommand command, CancellationToken cancellationToken)
