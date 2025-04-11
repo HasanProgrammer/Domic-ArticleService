@@ -40,7 +40,7 @@ public partial class ArticleCommandRepository
 public partial class ArticleCommandRepository
 {
     public Task<Article> FindByIdAsync(object id, CancellationToken cancellationToken)
-        => sqlContext.Articles.FirstOrDefaultAsync(article => article.Id == id as string, cancellationToken);
+        => sqlContext.Articles.AsNoTracking().FirstOrDefaultAsync(article => article.Id == id as string, cancellationToken);
 
     public Task<Article> FindByTitleAsync(string title, CancellationToken cancellationToken)
         => sqlContext.Articles.AsNoTracking().FirstOrDefaultAsync(article => article.Title.Value == title, cancellationToken);

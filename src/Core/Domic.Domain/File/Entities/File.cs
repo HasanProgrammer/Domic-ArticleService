@@ -16,9 +16,9 @@ public class File : Entity<string>
     
     //Value Objects
     
-    public ValueObjects.Path Path           { get; private set; }
-    public Name Name           { get; private set; }
-    public Extension Extension { get; private set; }
+    public ValueObjects.Path Path  { get; private set; }
+    public Name Name               { get; private set; }
+    public Extension Extension     { get; private set; }
 
     /*---------------------------------------------------------------*/
     
@@ -49,12 +49,12 @@ public class File : Entity<string>
         var nowDateTime        = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
 
-        Id          =   globalUniqueIdGenerator.GetRandom(6);
+        Id          = globalUniqueIdGenerator.GetRandom(6);
         ArticleId   = articleId;
+        IsActive    = IsActive.Active;
         Path        = new ValueObjects.Path(path);
         Name        = new Name(fileName);
         Extension   = new Extension(extension);
-        IsActive    = IsActive.Active;
 
         //audit
         CreatedBy   = identityUser.GetIdentity();

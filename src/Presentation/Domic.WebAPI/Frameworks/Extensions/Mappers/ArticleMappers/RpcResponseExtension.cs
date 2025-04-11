@@ -2,7 +2,7 @@ using Domic.Core.Common.ClassExtensions;
 using Domic.Core.Common.ClassHelpers;
 using Domic.Core.Article.Grpc;
 using Domic.Core.Infrastructure.Extensions;
-using Domic.UseCase.ArticleUseCase.DTOs.ViewModels;
+using Domic.UseCase.ArticleUseCase.DTOs;
 
 namespace Domic.WebAPI.Frameworks.Extensions.Mappers.ArticleMappers;
 
@@ -32,7 +32,7 @@ public static partial class RpcResponseExtension
     /// <param name="configuration"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static T ToRpcResponse<T>(this PaginatedCollection<ArticlesViewModel> models, IConfiguration configuration)
+    public static T ToRpcResponse<T>(this PaginatedCollection<ArticleDto> models, IConfiguration configuration)
     {
         object Response = null;
 

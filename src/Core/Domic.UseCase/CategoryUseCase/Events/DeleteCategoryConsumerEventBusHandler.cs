@@ -8,43 +8,36 @@ using Domic.Domain.File.Contracts.Interfaces;
 
 namespace Domic.UseCase.CategoryUseCase.Events;
 
-public class DeleteCategoryConsumerEventBusHandler : IConsumerEventBusHandler<CategoryDeleted>
+public class DeleteCategoryConsumerEventBusHandler(
+    IDateTime dateTime, 
+    IFileCommandRepository fileCommandRepository, 
+    IArticleCommandRepository articleCommandRepository
+) : IConsumerEventBusHandler<CategoryDeleted>
 {
-    private readonly IDateTime                 _dateTime;
-    private readonly IFileCommandRepository    _fileCommandRepository;
-    private readonly IArticleCommandRepository _articleCommandRepository;
-
-    public DeleteCategoryConsumerEventBusHandler(IArticleCommandRepository articleCommandRepository,
-        IFileCommandRepository fileCommandRepository, IDateTime dateTime
-    )
-    {
-        _dateTime                 = dateTime;
-        _fileCommandRepository    = fileCommandRepository;
-        _articleCommandRepository = articleCommandRepository;
-    }
-
-    public void BeforeHandle(CategoryDeleted @event){}
+    public Task BeforeHandleAsync(CategoryDeleted @event, CancellationToken cancellationToken)
+        => Task.CompletedTask;
 
     [WithCleanCache(Keies = Cache.Articles)]
     [TransactionConfig(Type = TransactionType.Command)]
-    public void Handle(CategoryDeleted @event)
+    public async Task HandleAsync(CategoryDeleted @event, CancellationToken cancellationToken)
     {
         var targetArticles =
-            _articleCommandRepository.FindByCategoryIdEagerLoadingAsync(@event.Id, default).GetAwaiter().GetResult();
+            await articleCommandRepository.FindByCategoryIdEagerLoadingAsync(@event.Id, cancellationToken);
 
         foreach (var article in targetArticles)
         {
-            article.Delete(_dateTime, @event.UpdatedBy, @event.UpdatedRole);
+            article.Delete(dateTime, @event.UpdatedBy, @event.UpdatedRole);
            
-            _articleCommandRepository.Change(article);
+            await articleCommandRepository.ChangeAsync(article, cancellationToken);
 
             #region HardDelete Files
 
-            _fileCommandRepository.RemoveRange(article.Files);
+            await fileCommandRepository.RemoveRangeAsync(article.Files, cancellationToken);
 
             #endregion
         }
     }
 
-    public void AfterHandle(CategoryDeleted @event){}
+    public Task AfterHandleAsync(CategoryDeleted @event, CancellationToken cancellationToken)
+        => Task.CompletedTask;
 }

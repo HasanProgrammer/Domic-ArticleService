@@ -269,8 +269,7 @@ public class Article : Entity<string>
     /// <param name="dateTime"></param>
     /// <param name="identityUser"></param>
     /// <param name="serializer"></param>
-    /// <param name="raiseEvent"></param>
-    public void Delete(IDateTime dateTime, IIdentityUser identityUser, ISerializer serializer, bool raiseEvent = true)
+    public void Delete(IDateTime dateTime, IIdentityUser identityUser, ISerializer serializer)
     {
         var nowDateTime = DateTime.Now;
         var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
@@ -282,15 +281,44 @@ public class Article : Entity<string>
         UpdatedRole = serializer.Serialize(identityUser.GetRoles());
         UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
         
-        if(raiseEvent)
-            AddEvent(
-                new ArticleDeleted {
-                    Id                    = Id                    ,
-                    UpdatedBy             = UpdatedBy             ,
-                    UpdatedRole           = UpdatedRole           ,
-                    UpdatedAt_EnglishDate = nowDateTime           ,
-                    UpdatedAt_PersianDate = nowPersianDateTime
-                }
-            );
+        AddEvent(
+            new ArticleDeleted {
+                Id                    = Id          ,
+                UpdatedBy             = UpdatedBy   ,
+                UpdatedRole           = UpdatedRole ,
+                UpdatedAt_EnglishDate = nowDateTime ,
+                UpdatedAt_PersianDate = nowPersianDateTime
+            }
+        );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <param name="updatedBy"></param>
+    /// <param name="updatedRole"></param>
+    /// <param name="raiseEvent"></param>
+    public void Delete(IDateTime dateTime, string updatedBy, string updatedRole, bool raiseEvent = true)
+    {
+        var nowDateTime = DateTime.Now;
+        var nowPersianDateTime = dateTime.ToPersianShortDate(nowDateTime);
+        
+        IsDeleted = IsDeleted.Delete;
+        
+        //audit
+        UpdatedBy   = updatedBy;
+        UpdatedRole = updatedRole;
+        UpdatedAt   = new UpdatedAt(nowDateTime, nowPersianDateTime);
+        
+        AddEvent(
+            new ArticleDeleted {
+                Id                    = Id          ,
+                UpdatedBy             = UpdatedBy   ,
+                UpdatedRole           = UpdatedRole ,
+                UpdatedAt_EnglishDate = nowDateTime ,
+                UpdatedAt_PersianDate = nowPersianDateTime
+            }
+        );
     }
 }

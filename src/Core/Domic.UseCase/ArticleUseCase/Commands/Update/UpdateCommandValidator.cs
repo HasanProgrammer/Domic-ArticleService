@@ -4,26 +4,21 @@ using Domic.Domain.Article.Contracts.Interfaces;
 
 namespace Domic.UseCase.ArticleUseCase.Commands.Update;
 
-public class UpdateCommandValidator : IValidator<UpdateCommand>
+public class UpdateCommandValidator(IArticleCommandRepository articleCommandRepository) : IValidator<UpdateCommand>
 {
-    private readonly IArticleCommandRepository _articleCommandRepository;
-
-    public UpdateCommandValidator(IArticleCommandRepository articleCommandRepository) 
-        => _articleCommandRepository = articleCommandRepository;
-
     public async Task<object> ValidateAsync(UpdateCommand input, CancellationToken cancellationToken)
     {
-        var targetArticle = 
-            await _articleCommandRepository.FindByIdAsync(input.TargetId, cancellationToken);
+        var targetArticle =
+            await articleCommandRepository.FindByIdAsync(input.TargetId, cancellationToken);
 
         if (targetArticle is null)
             throw new UseCaseException(
-                string.Format("مقاله ای با شناسه {0} وجود خارجی ندارد !", targetArticle.Id ?? "_خالی_")
+                string.Format("مقاله ای با شناسه {0} یافت نشد !", targetArticle.Id ?? "_خالی_")
             );
 
         if (!targetArticle.Title.Value.Equals(input.Title))
         {
-            var articleByTitle = await _articleCommandRepository.FindByTitleAsync(input.Title, cancellationToken);
+            var articleByTitle = await articleCommandRepository.FindByTitleAsync(input.Title, cancellationToken);
             
             if(articleByTitle is not null)
                 throw new UseCaseException(

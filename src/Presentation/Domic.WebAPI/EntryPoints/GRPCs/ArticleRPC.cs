@@ -2,30 +2,21 @@
 using Domic.Core.Common.ClassHelpers;
 using Domic.Core.Article.Grpc;
 using Domic.Core.UseCase.Contracts.Interfaces;
-using Domic.Core.WebAPI.Extensions;
 using Domic.UseCase.ArticleUseCase.Commands.Active;
 using Domic.UseCase.ArticleUseCase.Commands.CheckExist;
 using Domic.UseCase.ArticleUseCase.Commands.Create;
 using Domic.UseCase.ArticleUseCase.Commands.Delete;
 using Domic.UseCase.ArticleUseCase.Commands.InActive;
 using Domic.UseCase.ArticleUseCase.Commands.Update;
-using Domic.UseCase.ArticleUseCase.DTOs.ViewModels;
 using Domic.UseCase.ArticleUseCase.Queries.ReadAllPaginated;
 using Domic.WebAPI.Frameworks.Extensions.Mappers.ArticleMappers;
+using Domic.UseCase.ArticleUseCase.DTOs;
 
 namespace Domic.WebAPI.EntryPoints.GRPCs;
 
-public class ArticleRPC : ArticleService.ArticleServiceBase
+public class ArticleRPC(IMediator mediator, IConfiguration configuration) 
+    : ArticleService.ArticleServiceBase
 {
-    private readonly IMediator      _mediator;
-    private readonly IConfiguration _configuration;
-
-    public ArticleRPC(IMediator mediator, IConfiguration configuration)
-    {
-        _mediator      = mediator;
-        _configuration = configuration;
-    }
-
     /// <summary>
     /// 
     /// </summary>
@@ -34,11 +25,10 @@ public class ArticleRPC : ArticleService.ArticleServiceBase
     /// <returns></returns>
     public override async Task<CheckExistResponse> CheckExist(CheckExistRequest request, ServerCallContext context)
     {
-        //@ToDo Should be using [ ToCommand ] insted [ ToQuery ]
         var query = request.ToQuery<CheckExistCommand>();
             
         var result =
-            await _mediator.DispatchAsync<bool>(query, context.CancellationToken);
+            await mediator.DispatchAsync<bool>(query, context.CancellationToken);
 
         return result.ToRpcResponse<CheckExistResponse>();
     }
@@ -56,9 +46,9 @@ public class ArticleRPC : ArticleService.ArticleServiceBase
         var query = request.ToQuery<ReadAllPaginatedQuery>();
 
         var result = 
-            await _mediator.DispatchAsync<PaginatedCollection<ArticlesViewModel>>(query, context.CancellationToken);
+            await mediator.DispatchAsync<PaginatedCollection<ArticleDto>>(query, context.CancellationToken);
 
-        return result.ToRpcResponse<ReadAllPaginatedResponse>(_configuration);
+        return result.ToRpcResponse<ReadAllPaginatedResponse>(configuration);
     }
 
     /// <summary>
@@ -69,11 +59,11 @@ public class ArticleRPC : ArticleService.ArticleServiceBase
     /// <returns></returns>
     public override async Task<CreateResponse> Create(CreateRequest request, ServerCallContext context)
     {
-        var command = request.ToCommand<CreateCommand>(context.GetHttpContext().GetTokenOfGrpcHeader());
+        var command = request.ToCommand<CreateCommand>();
         
-        var result = await _mediator.DispatchAsync<string>(command, context.CancellationToken);
+        var result = await mediator.DispatchAsync<string>(command, context.CancellationToken);
 
-        return result.ToRpcResponse<CreateResponse>(_configuration);
+        return result.ToRpcResponse<CreateResponse>(configuration);
     }
 
     /// <summary>
@@ -84,11 +74,11 @@ public class ArticleRPC : ArticleService.ArticleServiceBase
     /// <returns></returns>
     public override async Task<UpdateResponse> Update(UpdateRequest request, ServerCallContext context)
     {
-        var command = request.ToCommand<UpdateCommand>(context.GetHttpContext().GetTokenOfGrpcHeader());
+        var command = request.ToCommand<UpdateCommand>();
         
-        var result = await _mediator.DispatchAsync<string>(command, context.CancellationToken);
+        var result = await mediator.DispatchAsync<string>(command, context.CancellationToken);
 
-        return result.ToRpcResponse<UpdateResponse>(_configuration);
+        return result.ToRpcResponse<UpdateResponse>(configuration);
     }
 
     /// <summary>
@@ -99,11 +89,11 @@ public class ArticleRPC : ArticleService.ArticleServiceBase
     /// <returns></returns>
     public override async Task<ActiveResponse> Active(ActiveRequest request, ServerCallContext context)
     {
-        var command = request.ToCommand<ActiveCommand>(context.GetHttpContext().GetTokenOfGrpcHeader());
+        var command = request.ToCommand<ActiveCommand>();
         
-        var result = await _mediator.DispatchAsync<string>(command, context.CancellationToken);
+        var result = await mediator.DispatchAsync<string>(command, context.CancellationToken);
 
-        return result.ToRpcResponse<ActiveResponse>(_configuration);
+        return result.ToRpcResponse<ActiveResponse>(configuration);
     }
 
     /// <summary>
@@ -114,11 +104,11 @@ public class ArticleRPC : ArticleService.ArticleServiceBase
     /// <returns></returns>
     public override async Task<InActiveResponse> InActive(InActiveRequest request, ServerCallContext context)
     {
-        var command = request.ToCommand<InActiveCommand>(context.GetHttpContext().GetTokenOfGrpcHeader());
+        var command = request.ToCommand<InActiveCommand>();
         
-        var result = await _mediator.DispatchAsync<string>(command, context.CancellationToken);
+        var result = await mediator.DispatchAsync<string>(command, context.CancellationToken);
 
-        return result.ToRpcResponse<InActiveResponse>(_configuration);
+        return result.ToRpcResponse<InActiveResponse>(configuration);
     }
 
     /// <summary>
@@ -129,10 +119,10 @@ public class ArticleRPC : ArticleService.ArticleServiceBase
     /// <returns></returns>
     public override async Task<DeleteResponse> Delete(DeleteRequest request, ServerCallContext context)
     {
-        var command = request.ToCommand<DeleteCommand>(context.GetHttpContext().GetTokenOfGrpcHeader());
+        var command = request.ToCommand<DeleteCommand>();
         
-        var result = await _mediator.DispatchAsync<string>(command, context.CancellationToken);
+        var result = await mediator.DispatchAsync<string>(command, context.CancellationToken);
 
-        return result.ToRpcResponse<DeleteResponse>(_configuration);
+        return result.ToRpcResponse<DeleteResponse>(configuration);
     }
 }

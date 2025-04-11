@@ -7,31 +7,26 @@ using Domic.Domain.User.Events;
 
 namespace Domic.UseCase.UserUseCase.Events;
 
-public class ActiveUserConsumerEventBusHandler : IConsumerEventBusHandler<UserActived>
+public class ActiveUserConsumerEventBusHandler(IArticleCommandRepository articleCommandRepository, IDateTime dateTime) 
+    : IConsumerEventBusHandler<UserActived>
 {
-    private readonly IDateTime                 _dateTime;
-    private readonly IArticleCommandRepository _articleCommandRepository;
+    public Task BeforeHandleAsync(UserActived @event, CancellationToken cancellationToken)
+        => Task.CompletedTask;
 
-    public ActiveUserConsumerEventBusHandler(IArticleCommandRepository articleCommandRepository, IDateTime dateTime)
-    {
-        _dateTime                 = dateTime;
-        _articleCommandRepository = articleCommandRepository;
-    }
-
-    public void BeforeHandle(UserActived @event){}
-
+    [WithCleanCache(Keies = Cache.Articles)]
     [TransactionConfig(Type = TransactionType.Command)]
-    public void Handle(UserActived @event)
+    public async Task HandleAsync(UserActived @event, CancellationToken cancellationToken)
     {
-        var articles = _articleCommandRepository.FindByUserIdAsync(@event.Id);
+        var articles = await articleCommandRepository.FindByUserIdAsync(@event.Id, cancellationToken);
 
         foreach (var article in articles)
         {
-            article.Active(_dateTime, @event.UpdatedBy, @event.UpdatedRole);
+            article.Active(dateTime, @event.UpdatedBy, @event.UpdatedRole);
             
-            _articleCommandRepository.Change(article);
+            await articleCommandRepository.ChangeAsync(article, cancellationToken);
         }
     }
 
-    public void AfterHandle(UserActived @event){}
+    public Task AfterHandleAsync(UserActived @event, CancellationToken cancellationToken)
+        => Task.CompletedTask;  
 }
