@@ -9,7 +9,7 @@ public class UpdateCommandValidator(IArticleCommandRepository articleCommandRepo
     public async Task<object> ValidateAsync(UpdateCommand input, CancellationToken cancellationToken)
     {
         var targetArticle =
-            await articleCommandRepository.FindByIdAsync(input.TargetId, cancellationToken);
+            await articleCommandRepository.FindByIdAsync(input.Id, cancellationToken);
 
         if (targetArticle is null)
             throw new UseCaseException(

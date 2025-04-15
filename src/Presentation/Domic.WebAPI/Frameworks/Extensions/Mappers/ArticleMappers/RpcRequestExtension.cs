@@ -70,7 +70,6 @@ public partial class RpcRequestExtension
         if (typeof(T) == typeof(CreateCommand))
         {
             Request = new CreateCommand {
-                UserId        = request.UserId?.Value     ,
                 CategoryId    = request.CategoryId?.Value ,
                 Title         = request.Title?.Value      ,
                 Summary       = request.Summary?.Value    ,
@@ -97,7 +96,6 @@ public partial class RpcRequestExtension
         if (typeof(T) == typeof(UpdateCommand))
         {
             Request = new UpdateCommand {
-                UserId        = request.UserId?.Value     ,
                 CategoryId    = request.CategoryId?.Value ,
                 Title         = request.Title?.Value      ,
                 Summary       = request.Summary?.Value    ,

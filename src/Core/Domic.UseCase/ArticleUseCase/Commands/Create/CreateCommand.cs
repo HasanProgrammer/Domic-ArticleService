@@ -6,7 +6,6 @@ public class CreateCommand : ICommand<string>
 {    
     //Article
     
-    public string UserId     { get; set; }
     public string CategoryId { get; set; }
     public string Title      { get; set; }
     public string Summary    { get; set; }
