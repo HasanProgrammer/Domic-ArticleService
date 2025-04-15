@@ -12,12 +12,8 @@ public class ArticleInternalDistributedCache(IArticleCommandRepository articleCo
     : IInternalDistributedCacheHandler<List<ArticleDto>>
 {
     [Config(Key = Cache.Articles, Ttl = 24*60)]
-    public async Task<List<ArticleDto>> SetAsync(CancellationToken cancellationToken)
-    {
-        var query =
-            await articleCommandRepository.FindAllEagerLoadingWithOrderingAsync(Order.Date, false, cancellationToken);
-
-        return query.Select(article => new ArticleDto {
+    public Task<List<ArticleDto>> SetAsync(CancellationToken cancellationToken) 
+        => articleCommandRepository.FindAllByProjectionAsync(article => new ArticleDto {
             Id                    = article.Id                          ,
             CreatedBy             = article.CreatedBy                   ,
             CategoryId            = article.CategoryId                  ,
@@ -35,6 +31,5 @@ public class ArticleInternalDistributedCache(IArticleCommandRepository articleCo
                 Name      = file.Name.Value ,
                 Extension = file.Extension.Value 
             })
-        }).ToList();
-    }
+        }, cancellationToken: cancellationToken);
 }

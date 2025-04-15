@@ -1,0 +1,12 @@
+
+ Date: 1404/01/26 | Message: The method or operation is not implemented. | Source: System.NotImplementedException: The method or operation is not implemented.
+   at Domic.Core.Domain.Contracts.Interfaces.IRepository`1.FindAllEagerLoadingWithOrderingAsync(Order order, Boolean accending, CancellationToken cancellationToken)
+   at Domic.UseCase.ArticleUseCase.Caches.ArticleInternalDistributedCache.SetAsync(CancellationToken cancellationToken) in D:\Programming\Domic\Domic-ArticleService\src\Core\Domic.UseCase\ArticleUseCase\Caches\ArticleInternalDistributedCache.cs:line 17
+   at Domic.Core.Infrastructure.Concretes.InternalDistributedCacheMediator.GetAsync[TResult](CancellationToken cancellationToken)
+   at Domic.UseCase.ArticleUseCase.Queries.ReadAllPaginated.ReadAllPaginatedQueryHandler.HandleAsync(ReadAllPaginatedQuery query, CancellationToken cancellationToken) in D:\Programming\Domic\Domic-ArticleService\src\Core\Domic.UseCase\ArticleUseCase\Queries\ReadAllPaginated\ReadAllPaginatedQueryHandler.cs:line 17
+   at Domic.Core.Infrastructure.Concretes.Mediator.DispatchAsync[TResult](IQuery`1 query, CancellationToken cancellationToken)
+   at Domic.WebAPI.EntryPoints.GRPCs.ArticleRPC.ReadAllPaginated(ReadAllPaginatedRequest request, ServerCallContext context) in D:\Programming\Domic\Domic-ArticleService\src\Presentation\Domic.WebAPI\EntryPoints\GRPCs\ArticleRPC.cs:line 48
+   at Grpc.Shared.Server.UnaryServerMethodInvoker`3.ResolvedInterceptorInvoker(TRequest resolvedRequest, ServerCallContext resolvedContext)
+   at Grpc.Shared.Server.UnaryServerMethodInvoker`3.ResolvedInterceptorInvoker(TRequest resolvedRequest, ServerCallContext resolvedContext)
+   at Domic.Core.WebAPI.Middlewares.FullExceptionHandlerInterceptor.UnaryServerHandler[TRequest,TResponse](TRequest request, ServerCallContext context, UnaryServerMethod`2 continuation) 
+

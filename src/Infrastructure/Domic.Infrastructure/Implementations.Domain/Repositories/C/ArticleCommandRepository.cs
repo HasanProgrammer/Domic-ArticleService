@@ -1,4 +1,5 @@
-﻿using Domic.Core.Domain.Enumerations;
+﻿using System.Linq.Expressions;
+using Domic.Core.Domain.Enumerations;
 using Domic.Domain.Article.Contracts.Interfaces;
 using Domic.Domain.Article.Entities;
 using Domic.Persistence.Contexts.C;
@@ -7,9 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Domic.Infrastructure.Implementations.Domain.Repositories.C;
 
 //Config
-public partial class ArticleCommandRepository(SQLContext sqlContext) : IArticleCommandRepository
-{
-}
+public partial class ArticleCommandRepository(SQLContext sqlContext) : IArticleCommandRepository;
 
 //Transaction
 public partial class ArticleCommandRepository
@@ -54,19 +53,10 @@ public partial class ArticleCommandRepository
     public Task<List<Article>> FindByUserIdAsync(string userId, CancellationToken cancellationToken)
         => sqlContext.Articles.AsNoTracking().Where(article => article.CreatedBy == userId).ToListAsync(cancellationToken);
 
-    public Task<List<Article>> FindAllEagerLoadingWithOrderingAsync(Order order, bool isAscending, CancellationToken cancellationToken)
-    {
-        var query = sqlContext.Articles.AsNoTracking();
-
-        if (order == Order.Date)
-            query = isAscending
-                ? query.OrderBy(article => article.CreatedAt.EnglishDate.Value) 
-                : query.OrderByDescending(article => article.CreatedAt.EnglishDate.Value);
-        else if (order == Order.Id)
-            query = isAscending
-                ? query.OrderBy(article => article.Id)
-                : query.OrderByDescending(article => article.Id);
-
-        return query.Include(article => article.Files).ToListAsync(cancellationToken);    
-    }
+    public Task<List<TViewModel>> FindAllByProjectionAsync<TViewModel>(
+        Expression<Func<Article, TViewModel>> projection, CancellationToken cancellationToken
+    ) => sqlContext.Articles.AsNoTracking()
+                            .OrderByDescending(article => article.CreatedAt.EnglishDate)
+                            .Select(projection)
+                            .ToListAsync(cancellationToken);
 }
