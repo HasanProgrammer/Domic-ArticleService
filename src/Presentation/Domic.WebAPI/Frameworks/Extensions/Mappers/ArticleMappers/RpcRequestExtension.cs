@@ -96,6 +96,7 @@ public partial class RpcRequestExtension
         if (typeof(T) == typeof(UpdateCommand))
         {
             Request = new UpdateCommand {
+                Id            = request.TargetId?.Value   ,
                 CategoryId    = request.CategoryId?.Value ,
                 Title         = request.Title?.Value      ,
                 Summary       = request.Summary?.Value    ,
