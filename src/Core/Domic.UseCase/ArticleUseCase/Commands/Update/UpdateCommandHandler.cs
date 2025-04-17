@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS0649
 
+using Domic.Core.Common.ClassConsts;
 using Domic.Core.Domain.Contracts.Interfaces;
 using Domic.Core.UseCase.Attributes;
 using Domic.Core.UseCase.Contracts.Interfaces;
@@ -27,6 +28,7 @@ public class UpdateCommandHandler(
 
     [WithValidation]
     [WithTransaction]
+    [WithCleanCache(Keies = Cache.Articles)]
     public async Task<string> HandleAsync(UpdateCommand command, CancellationToken cancellationToken)
     {
         var targetArticle = _validationResult as Article;

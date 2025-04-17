@@ -1,4 +1,5 @@
-﻿using Domic.Core.Domain.Contracts.Interfaces;
+﻿using Domic.Core.Common.ClassConsts;
+using Domic.Core.Domain.Contracts.Interfaces;
 using Domic.Core.UseCase.Attributes;
 using Domic.Core.UseCase.Contracts.Interfaces;
 using Domic.Domain.Article.Contracts.Interfaces;
@@ -23,6 +24,7 @@ public class CreateCommandHandler(
 
     [WithValidation]
     [WithTransaction]
+    [WithCleanCache(Keies = Cache.Articles)]
     public async Task<string> HandleAsync(CreateCommand command, CancellationToken cancellationToken)
     {
         var fileId = idGenerator.GetRandom();
