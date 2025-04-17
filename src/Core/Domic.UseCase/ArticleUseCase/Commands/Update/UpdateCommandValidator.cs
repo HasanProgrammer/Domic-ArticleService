@@ -13,7 +13,7 @@ public class UpdateCommandValidator(IArticleCommandRepository articleCommandRepo
 
         if (targetArticle is null)
             throw new UseCaseException(
-                string.Format("مقاله ای با شناسه {0} یافت نشد !", targetArticle.Id ?? "_خالی_")
+                string.Format("مقاله ای با شناسه {0} یافت نشد !", input.Id ?? "_خالی_")
             );
 
         if (!targetArticle.Title.Value.Equals(input.Title))
