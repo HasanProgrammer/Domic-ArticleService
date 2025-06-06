@@ -34,7 +34,7 @@
         "E-RedisConnectionString": "127.0.0.1:6379",
         "I-RedisConnectionString": "127.0.0.1:6379",
         "MongoConnectionString": "",
-        "C-SqlServerConnectionString": "Server=127.0.0.1,1633;Database=C-ArticleService;User ID=sa;Password=Domic123!@#;MultipleActiveResultSets=true;Integrated Security=false;",
+        "C-SqlServerConnectionString": "Server=127.0.0.1,1633;Database=C-ArticleService;User ID=sa;Password=Domic123!@#;MultipleActiveResultSets=true;Integrated Security=false;TrustServerCertificate=true",
         "Q-SqlServerConnectionString": "",
         "Host": "localhost",
         "Port": "8001",
