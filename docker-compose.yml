@@ -21,7 +21,8 @@ services:
       - "1020-1040:443"
     volumes:
       - log:/app/CoreLogs
-      - ~/services/Domic-ArticleService/.https/:/https/
+#     - ~/services/Domic-ArticleService/.https/:/https/
+      - C:\https\:/https/
     environment:
       - Elastic-Host=http://domic.elastic.search:9200
       - Elastic-Index=article
