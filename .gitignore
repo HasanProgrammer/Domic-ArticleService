@@ -11,6 +11,8 @@ nupkg/
 # Rider
 .idea
 
+src/Presentation/Domic.WebAPI/CoreLogs/Logs.txt
+
 # User-specific files
 *.suo
 *.user
@@ -35,5 +37,3 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
-
-src/Services/CoreService/Architecture
