@@ -2,11 +2,11 @@ name: 'article_service'
 
 services:
   
-  domic.article.api:
+  domic.article.service:
     networks:
       - domic
-    image: article_service_image:1.0.0
-    container_name: "article_service_api"
+    image: domic_article_service_image:1.0.0
+    container_name: "domic_article_service"
 #    deploy:
 #      resources:
 #        limits:
