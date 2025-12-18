@@ -5,7 +5,7 @@ services:
   domic.article.api:
     networks:
       - domic
-    image: article_service_api_image:1.0.0
+    image: article_service_image:1.0.0
     container_name: "article_service_api"
 #    deploy:
 #      resources:
@@ -71,7 +71,7 @@ services:
 #   command: 'redis-server'
 #   ports:
 #     - 6400:6379
-    
+
 networks:
   domic:
     external: true
