@@ -42,7 +42,7 @@ services:
       - C-SqlServerConnectionString=Server=domic.sql.server,1433;Database=ArticleService;User ID=sa;Password=Domic123!@#;MultipleActiveResultSets=true;Integrated Security=false;TrustServerCertificate=True;
 #     - C-SqlServerConnectionString=Server=domic.article.sql.server,1433;Database=ArticleService;User ID=sa;Password=Domic123!@#;MultipleActiveResultSets=true;Integrated Security=false;TrustServerCertificate=True;
       - Q-SqlServerConnectionString=
-      - Host=domic.article.api
+      - Host=domic.article.service
       - Port=443
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=https://+:443;http://+:80
