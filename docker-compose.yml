@@ -20,9 +20,8 @@ services:
     ports:
       - "1020-1040:443"
     volumes:
-      - log:/app/CoreLogs
+      - ~/services/Logs/Domic-ArticleService/:/app/CoreLogs
       - ~/services/Domic-ArticleService/.https/:/https/
-#     - C:\https\:/https/
     environment:
       - Elastic-Host=http://domic.elastic.search:9200
       - Elastic-Index=article
@@ -40,8 +39,8 @@ services:
       - I-RedisConnectionString=domic.redis:6379
 #     - I-RedisConnectionString=domic.article.redis:6379
       - MongoConnectionString=
-      - C-SqlServerConnectionString=Server=domic.sql.server,1433;Database=ArticleService;User ID=sa;Password=Domic123!@#;MultipleActiveResultSets=true;Integrated Security=false;
-#     - C-SqlServerConnectionString=Server=domic.article.sql.server,1433;Database=ArticleService;User ID=sa;Password=Domic123!@#;MultipleActiveResultSets=true;Integrated Security=false;
+      - C-SqlServerConnectionString=Server=domic.sql.server,1433;Database=ArticleService;User ID=sa;Password=Domic123!@#;MultipleActiveResultSets=true;Integrated Security=false;TrustServerCertificate=True;
+#     - C-SqlServerConnectionString=Server=domic.article.sql.server,1433;Database=ArticleService;User ID=sa;Password=Domic123!@#;MultipleActiveResultSets=true;Integrated Security=false;TrustServerCertificate=True;
       - Q-SqlServerConnectionString=
       - Host=domic.article.api
       - Port=443
@@ -72,9 +71,6 @@ services:
 #   command: 'redis-server'
 #   ports:
 #     - 6400:6379
-
-volumes: 
-  log:
     
 networks:
   domic:
